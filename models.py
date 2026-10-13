@@ -30,6 +30,10 @@ class NormalizedAlert(BaseModel):
     # Free text from the scanner. A claim, not a fact.
     note: str | None = None
 
+    # Extra context from Xray, passed to the agent as facts
+    package_type: str | None = None  # e.g. "maven", "npm"
+    fix_available: bool | None = None  # a fixed version exists. It does not mean the fix is deployed.
+
     # Identity fields, used later to match existing tickets
     finding_key: str  # display only: a readable summary of the fields below
     component: str | None = None  # xray

@@ -69,6 +69,8 @@ def normalize_xray(raw: dict) -> NormalizedAlert:
         detected_at=to_iso_utc(datetime.fromisoformat(raw["detected_at"])),
         raw_time=raw["detected_at"],
         note=raw.get("mitigation_note"),
+        package_type=raw.get("package_type"),  # optional: useful context, not needed to triage
+        fix_available=raw.get("fix_available"),
         finding_key=f"{raw['repo']} | {raw['component']} | {raw['cve']}",
         component=raw["component"],
         cve=raw["cve"],

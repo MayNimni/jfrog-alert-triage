@@ -5,16 +5,17 @@ import pytest
 from normalize import InvalidAlert, normalize
 
 
-def test_xray_severity_and_time():
+def test_xray_severity_time_and_fix_context():
     raw = {
         "source": "xray-scan", "scan_id": "xr-1", "repo": "checkout-api",
-        "component": "lib:1.0", "cve": "CVE-1", "cvss_score": 7.5,
-        "detected_at": "2026-09-18T14:32:00Z",
+        "package_type": "maven", "component": "lib:1.0", "cve": "CVE-1", "cvss_score": 7.5,
+        "fix_available": True, "detected_at": "2026-09-18T14:32:00Z",
     }
     alert = normalize(raw)
     assert alert.normalized_severity == "Sev-1"  # 7.5 is in the 7.0-8.9 band
     assert alert.detected_at == "2026-09-18T14:32:00Z"
     assert alert.flags == []
+    assert (alert.package_type, alert.fix_available) == ("maven", True)
 
 
 def test_code_scan_2025_epoch_is_flagged_suspect():
