@@ -57,33 +57,64 @@ def sla_label(severity: str, tier: str | None) -> str:
 
 # --- Checks on the model's answer ---
 
-def ticket_ids_returned_by_tools(trace: list[dict]) -> set[str]:
-    ticket_ids = set()
+def matches_returned_by_tools(trace: list[dict]) -> list[dict]:
+    """Every ticket match that find_matching_tickets returned in this run."""
+    matches = []
     for entry in trace:
         if entry["tool"] == "find_matching_tickets" and entry["result"]:
-            for match in entry["result"].get("matches", []):
-                ticket_ids.add(match["ticket_id"])
-    return ticket_ids
+            matches += entry["result"].get("matches", [])
+    return matches
+
+
+def match_for_ticket(ticket_id: str | None, trace: list[dict]) -> dict | None:
+    for match in matches_returned_by_tools(trace):
+        if match["ticket_id"] == ticket_id:
+            return match
+    return None
 
 
 def check_decision(decision: AgentDecision, trace: list[dict]) -> list[str]:
     """Problems that make the model's answer untrustworthy. Empty list = the answer passes."""
     problems = []
     tools_called = [entry["tool"] for entry in trace]
+    ticket_id = decision.linked_ticket_id
 
     if "find_matching_tickets" not in tools_called:
         problems.append("the agent never checked for existing tickets")
 
     if decision.action in ("link", "reopen"):
-        if decision.linked_ticket_id not in store.TICKETS:
-            problems.append(f"ticket {decision.linked_ticket_id!r} does not exist")
-        elif decision.linked_ticket_id not in ticket_ids_returned_by_tools(trace):
-            problems.append(f"ticket {decision.linked_ticket_id!r} was not returned by a tool in this run")
+        match = match_for_ticket(ticket_id, trace)
+        if ticket_id not in store.TICKETS:
+            problems.append(f"ticket {ticket_id!r} does not exist")
+        elif match is None:
+            problems.append(f"ticket {ticket_id!r} was not returned by a tool in this run")
+        elif decision.action == "reopen" and match["status"] == "open":
+            problems.append(f"reopen on {ticket_id}, which is already open")
+        elif decision.action == "link" and match["status"] == "resolved":
+            problems.append(f"link to resolved {ticket_id} would hide a recurrence (policy §4)")
+
+    if decision.action == "create":
+        for match in matches_returned_by_tools(trace):
+            if match["match_type"] == "exact":
+                problems.append(f"create although {match['ticket_id']} is an exact match (a duplicate)")
 
     if decision.recommended_priority and not decision.priority_reason:
         problems.append("recommended_priority has no priority_reason")
 
     return problems
+
+
+def reasons_the_model_missed(decision: AgentDecision, trace: list[dict]) -> list[str]:
+    """Human reasons the tool results call for, but the model left out. Code adds them."""
+    match = match_for_ticket(decision.linked_ticket_id, trace)
+    if match is None:
+        return []
+    missed = []
+    if match["match_type"] == "partial" and "AMBIGUOUS_DUPLICATE" not in decision.judgment_reasons:
+        missed.append("AMBIGUOUS_DUPLICATE")
+    if match["status"] == "resolved" and "RECURRENCE" not in decision.judgment_reasons:
+        missed.append("RECURRENCE")
+    return missed
 
 
 def most_urgent(severity_a: str, severity_b: str) -> str:

@@ -51,6 +51,7 @@ def triage(alert: NormalizedAlert) -> dict:
     else:
         action, linked_ticket_id = decision.action, decision.linked_ticket_id
         human_reasons += decision.judgment_reasons
+        human_reasons += guardrails.reasons_the_model_missed(decision, trace)
         if action == "manual_review" and not human_reasons:
             human_reasons.append("AGENT_UNSURE")  # the model asked for review without saying why
         if guardrails.is_downgrade(decision, alert):
