@@ -1,12 +1,13 @@
 """Run the triage pipeline: normalize -> agent -> guardrails -> one record per ticket.
 
 Usage:
-    python main.py                      # all alerts
-    python main.py cp-77010 cp-77011    # only these alerts (fewer LLM calls)
+    python main.py                                # all alerts in data/alerts.json
+    python main.py cp-77010 cp-77011              # only these alerts (fewer LLM calls)
+    python main.py --alerts data/bad_alerts.json  # another alerts file
 """
 
+import argparse
 import json
-import sys
 from pathlib import Path
 
 import guardrails
@@ -17,7 +18,15 @@ from models import NormalizedAlert
 from normalize import InvalidAlert, load_alerts, normalize
 
 DATA = Path(__file__).parent / "data"
-OUTPUT = Path(__file__).parent / "output" / "results.json"
+DEFAULT_ALERTS = DATA / "alerts.json"
+OUTPUT_DIR = Path(__file__).parent / "output"
+
+
+def output_path(alerts_path: Path) -> Path:
+    """results.json for the main alerts file, <name>_results.json for any other, so nothing is overwritten."""
+    if alerts_path.resolve() == DEFAULT_ALERTS.resolve():
+        return OUTPUT_DIR / "results.json"
+    return OUTPUT_DIR / f"{alerts_path.stem}_results.json"
 
 
 def apply_to_store(action: str, linked_ticket_id: str | None, alert: NormalizedAlert) -> str:
@@ -106,18 +115,20 @@ def add_to_records(records: dict, alert: NormalizedAlert, result: dict) -> None:
     record["trace"].append(result["trace"])
 
 
-def main(only_alert_ids: list[str]) -> None:
+def main(alerts_path: Path, only_alert_ids: list[str]) -> None:
     store.load_store(DATA / "historical_tickets.json")
     records = {}
     invalid = []
     alerts = []
 
-    for raw in load_alerts(DATA / "alerts.json"):
+    for raw in load_alerts(alerts_path):
         try:
             alert = normalize(raw)
         except InvalidAlert as reason:
             invalid.append({"action": "manual_review", "needs_human": True,
                             "human_reasons": ["INVALID_INPUT"], "problem": str(reason), "raw_alert": raw})
+            raw_id = raw.get("scan_id") or raw.get("finding_id") or "(no id)"
+            print(f"{raw_id}: INVALID_INPUT  {reason}")
             continue
         tools.ALERTS[alert.alert_id] = alert
         if not only_alert_ids or alert.alert_id in only_alert_ids:
@@ -128,10 +139,15 @@ def main(only_alert_ids: list[str]) -> None:
         add_to_records(records, alert, result)
         print(f"{alert.alert_id}: {result['action']} -> {result['ticket_id']}  {result['human_reasons']}")
 
-    OUTPUT.parent.mkdir(exist_ok=True)
-    OUTPUT.write_text(json.dumps(list(records.values()) + invalid, indent=2))
-    print(f"\n{len(alerts)} alerts -> {len(records)} tickets, {len(invalid)} invalid. Written to {OUTPUT}")
+    output = output_path(alerts_path)
+    output.parent.mkdir(exist_ok=True)
+    output.write_text(json.dumps(list(records.values()) + invalid, indent=2))
+    print(f"\n{len(alerts)} alerts -> {len(records)} tickets, {len(invalid)} invalid. Written to {output}")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    parser = argparse.ArgumentParser(description="Triage security alerts into tickets.")
+    parser.add_argument("alert_ids", nargs="*", help="only run these alert ids (default: all)")
+    parser.add_argument("--alerts", type=Path, default=DEFAULT_ALERTS, help="alerts file (default: data/alerts.json)")
+    args = parser.parse_args()
+    main(args.alerts, args.alert_ids)
