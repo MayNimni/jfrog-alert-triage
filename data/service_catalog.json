@@ -1,0 +1,55 @@
+{
+  "_comment": "Synthetic data for the take-home exercise. Not every service that will appear in alerts.json is listed here — that's intentional.",
+  "services": [
+    {
+      "repo": "checkout-api",
+      "team": "payments-platform",
+      "slack_channel": "#payments-platform",
+      "on_call": "pagerduty:payments-platform",
+      "criticality_tier": "P0"
+    },
+    {
+      "repo": "artifact-gateway",
+      "team": "artifact-core",
+      "slack_channel": "#artifact-core",
+      "on_call": "pagerduty:artifact-core",
+      "criticality_tier": "P0"
+    },
+    {
+      "repo": "billing-worker",
+      "team": ["payments-platform", "data-platform"],
+      "slack_channel": ["#payments-platform", "#data-platform"],
+      "on_call": ["pagerduty:payments-platform", "pagerduty:data-platform"],
+      "criticality_tier": "P1",
+      "note": "Jointly maintained since the Q1 billing-events migration. No single owning team of record yet."
+    },
+    {
+      "repo": "docs-site",
+      "team": "developer-experience",
+      "slack_channel": "#devex",
+      "on_call": null,
+      "criticality_tier": "P3"
+    },
+    {
+      "repo": "auth-gateway",
+      "team": "identity-platform",
+      "slack_channel": "#identity-platform",
+      "on_call": "pagerduty:identity-platform",
+      "criticality_tier": "P0"
+    },
+    {
+      "repo": "notification-service",
+      "team": "platform-infra",
+      "slack_channel": "#platform-infra",
+      "on_call": "pagerduty:platform-infra",
+      "criticality_tier": "P2"
+    },
+    {
+      "repo": "search-indexer",
+      "team": "search-platform",
+      "slack_channel": "#search-platform",
+      "on_call": "pagerduty:search-platform",
+      "criticality_tier": "P1"
+    }
+  ]
+}

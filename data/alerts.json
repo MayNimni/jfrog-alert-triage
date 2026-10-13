@@ -1,0 +1,236 @@
+{
+  "_comment": "Synthetic data for the take-home exercise. Three scanners feed this queue, each with its own schema, its own severity scale, and its own timestamp format. Nothing is pre-labeled as a duplicate, a group, or a false positive.",
+  "alerts": [
+    {
+      "source": "xray-scan",
+      "scan_id": "xr-88213",
+      "repo": "checkout-api",
+      "package_type": "maven",
+      "component": "com.fasterxml.jackson.core:jackson-databind:2.9.8",
+      "cve": "CVE-2020-36518",
+      "cvss_score": 7.5,
+      "fix_available": true,
+      "detected_at": "2026-09-18T14:32:00Z"
+    },
+    {
+      "source": "xray-scan",
+      "scan_id": "xr-88240",
+      "repo": "checkout-api",
+      "package_type": "maven",
+      "component": "com.fasterxml.jackson.core:jackson-databind:2.9.8",
+      "cve": "CVE-2020-36518",
+      "cvss_score": 7.5,
+      "fix_available": true,
+      "detected_at": "2026-09-19T02:10:00Z"
+    },
+    {
+      "source": "xray-scan",
+      "scan_id": "xr-88301",
+      "repo": "auth-gateway",
+      "package_type": "npm",
+      "component": "jsonwebtoken:8.5.1",
+      "cve": "CVE-2022-23540",
+      "cvss_score": 9.1,
+      "fix_available": true,
+      "detected_at": "2026-09-19T03:40:00Z",
+      "mitigation_note": "Upgraded to jsonwebtoken 9.0.0 in prod as of 2026-09-10 per JIRA SEC-4055. Dependency lockfile in this branch not yet updated — scanner reads the lockfile, not the deployed artifact."
+    },
+    {
+      "source": "code-scan",
+      "finding_id": "cs-51290",
+      "repo": "billing-worker",
+      "rule": "hardcoded-secret",
+      "severity_label": "Critical",
+      "file": "src/config/secrets.py",
+      "reported_ts": 1758294600
+    },
+    {
+      "source": "code-scan",
+      "finding_id": "cs-51301",
+      "repo": "search-indexer",
+      "rule": "outdated-tls-config",
+      "severity_label": "Medium",
+      "file": "infra/nginx.conf",
+      "reported_ts": 1758298200
+    },
+    {
+      "source": "code-scan",
+      "finding_id": "cs-51322",
+      "repo": "internal-metrics-relay",
+      "rule": "insecure-deserialization",
+      "severity_label": "High",
+      "file": "relay/decode.go",
+      "reported_ts": 1758301800
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77010",
+      "resource_arn": "arn:aws:s3:::jfrog-legacy-reporting-exports",
+      "repo": "legacy-reporting",
+      "finding_type": "public-read-acl",
+      "risk_score": 88,
+      "first_seen": "19/09/2026 09:15"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77011",
+      "resource_arn": "arn:aws:s3:::jfrog-legacy-reporting-exports",
+      "repo": "legacy-reporting",
+      "finding_type": "public-read-acl",
+      "risk_score": 88,
+      "first_seen": "19/09/2026 09:19"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77013",
+      "resource_arn": "arn:aws:s3:::jfrog-legacy-reporting-exports",
+      "repo": "legacy-reporting",
+      "finding_type": "public-read-acl",
+      "risk_score": 91,
+      "first_seen": "19/09/2026 09:24"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77016",
+      "resource_arn": "arn:aws:s3:::jfrog-legacy-reporting-exports",
+      "repo": "legacy-reporting",
+      "finding_type": "public-read-acl",
+      "risk_score": 88,
+      "first_seen": "19/09/2026 09:31"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77022",
+      "resource_arn": "arn:aws:s3:::jfrog-legacy-reporting-exports",
+      "repo": "legacy-reporting",
+      "finding_type": "public-read-acl",
+      "risk_score": 90,
+      "first_seen": "19/09/2026 09:47"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77104",
+      "resource_arn": "arn:aws:notification-service-queue",
+      "repo": "notification-service",
+      "finding_type": "unencrypted-queue",
+      "risk_score": 41,
+      "first_seen": "19/09/2026 11:02"
+    },
+    {
+      "source": "xray-scan",
+      "scan_id": "xr-88355",
+      "repo": "artifact-gateway",
+      "package_type": "go",
+      "component": "golang.org/x/net:0.17.0",
+      "cve": "CVE-2023-39325",
+      "cvss_score": 8.6,
+      "fix_available": true,
+      "detected_at": "2026-09-20T09:05:00Z"
+    },
+    {
+      "source": "xray-scan",
+      "scan_id": "xr-88361",
+      "repo": "auth-gateway",
+      "package_type": "npm",
+      "component": "axios:1.3.2",
+      "cve": "CVE-2023-45857",
+      "cvss_score": 6.1,
+      "fix_available": true,
+      "detected_at": "2026-09-20T09:40:00Z"
+    },
+    {
+      "source": "xray-scan",
+      "scan_id": "xr-88374",
+      "repo": "search-indexer",
+      "package_type": "pip",
+      "component": "pyyaml:5.3.1",
+      "cve": "CVE-2020-14343",
+      "cvss_score": 3.2,
+      "fix_available": false,
+      "detected_at": "2026-09-20T10:12:00Z"
+    },
+    {
+      "source": "xray-scan",
+      "scan_id": "xr-88390",
+      "repo": "billing-worker",
+      "package_type": "maven",
+      "component": "org.apache.commons:commons-compress:1.20",
+      "cve": "CVE-2021-36090",
+      "cvss_score": 7.8,
+      "fix_available": true,
+      "detected_at": "2026-09-20T13:27:00Z"
+    },
+    {
+      "source": "code-scan",
+      "finding_id": "cs-51340",
+      "repo": "docs-site",
+      "rule": "missing-csp-header",
+      "severity_label": "Low",
+      "file": "server/headers.js",
+      "reported_ts": 1758369600
+    },
+    {
+      "source": "code-scan",
+      "finding_id": "cs-51358",
+      "repo": "notification-service",
+      "rule": "sql-injection-risk",
+      "severity_label": "High",
+      "file": "src/handlers/query_builder.py",
+      "reported_ts": 1758375000
+    },
+    {
+      "source": "code-scan",
+      "finding_id": "cs-51371",
+      "repo": "checkout-api",
+      "rule": "hardcoded-secret",
+      "severity_label": "Critical",
+      "file": "src/payments/stripe_client.py",
+      "reported_ts": 1758380400
+    },
+    {
+      "source": "code-scan",
+      "finding_id": "cs-51385",
+      "repo": "search-indexer",
+      "rule": "outdated-tls-config",
+      "severity_label": "Medium",
+      "file": "infra/nginx.conf",
+      "reported_ts": 1758385800
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77140",
+      "resource_arn": "arn:aws:iam::role/artifact-gateway-deploy-role",
+      "repo": "artifact-gateway",
+      "finding_type": "overly-permissive-iam-role",
+      "risk_score": 57,
+      "first_seen": "20/09/2026 08:50"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77152",
+      "resource_arn": "arn:aws:rds:::auth-gateway-sessions-db",
+      "repo": "auth-gateway",
+      "finding_type": "unencrypted-storage",
+      "risk_score": 64,
+      "first_seen": "20/09/2026 09:30"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77168",
+      "resource_arn": "arn:aws:s3:::jfrog-metrics-relay-cold-storage",
+      "repo": "internal-metrics-relay",
+      "finding_type": "public-read-acl",
+      "risk_score": 72,
+      "first_seen": "20/09/2026 12:05"
+    },
+    {
+      "source": "cloud-posture",
+      "finding_id": "cp-77179",
+      "resource_arn": "arn:aws:sqs:::notification-service-retry-queue",
+      "repo": "notification-service",
+      "finding_type": "unencrypted-queue",
+      "risk_score": 22,
+      "first_seen": "20/09/2026 15:41"
+    }
+  ]
+}

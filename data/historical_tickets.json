@@ -1,0 +1,35 @@
+{
+  "_comment": "Synthetic data. Tickets already open or resolved in the tracker before alerts.json was captured.",
+  "tickets": [
+    {
+      "ticket_id": "SEC-4102",
+      "source": "xray-scan",
+      "repo": "checkout-api",
+      "component": "com.fasterxml.jackson.core:jackson-databind:2.9.8",
+      "cve": "CVE-2020-36518",
+      "status": "open",
+      "created_at": "2026-09-17T08:04:00Z",
+      "assigned_team": "payments-platform"
+    },
+    {
+      "ticket_id": "SEC-3987",
+      "source": "cloud-posture",
+      "resource_arn": "arn:aws:s3:::jfrog-legacy-reporting-exports",
+      "finding_type": "public-read-acl",
+      "status": "resolved",
+      "created_at": "2026-08-02T11:00:00Z",
+      "resolved_at": "2026-08-04T09:30:00Z",
+      "assigned_team": "unassigned",
+      "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible."
+    },
+    {
+      "ticket_id": "SEC-4110",
+      "source": "code-scan",
+      "repo": "search-indexer",
+      "rule": "outdated-tls-config",
+      "status": "open",
+      "created_at": "2026-09-15T13:20:00Z",
+      "assigned_team": "search-platform"
+    }
+  ]
+}
