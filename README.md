@@ -9,7 +9,7 @@ A Gemini agent (Google ADK, `gemini-3.8-flash`) makes the judgment calls. Fixed 
 | I want to... | Do this | Needs setup? |
 |---|---|---|
 | **See the results** | Open the report: **https://maynimni.github.io/jfrog-alert-triage/output/report.html** | No |
-| **Understand how it works** | Read the diagram in [docs/architecture.md](docs/architecture.md) | No |
+| **Understand how it works** | Look at the diagram: [docs/architecture.png](docs/architecture.png) | No |
 | **Run it myself** | Follow the 3 steps below | Yes, about 3 minutes |
 
 The report is a ticket queue from a real run: 24 alerts became 18 tickets. Click a ticket to see what the agent decided, why, and which tools it called.
