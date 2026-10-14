@@ -1,0 +1,1594 @@
+[
+  {
+    "ticket_id": "SEC-4102",
+    "action": "link",
+    "alert_ids": [
+      "xr-88213",
+      "xr-88240"
+    ],
+    "severity": "Sev-1",
+    "raw_scores": [
+      "cvss 7.5",
+      "cvss 7.5"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "payments-platform"
+      ],
+      "slack": [
+        "#payments-platform"
+      ],
+      "on_call": [
+        "pagerduty:payments-platform"
+      ],
+      "tier": "P0"
+    },
+    "sla": "1 business day",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "A Sev-1 vulnerability (CVE-2020-36518) was detected in jackson-databind version 2.9.8 within the checkout-api repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "xr-88213",
+        "action": "link",
+        "problems": [],
+        "why": "An open ticket (SEC-4102) was found with an exact match for the same repo, component, and CVE, so this alert is linked to it.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "xr-88213"
+            },
+            "result": {
+              "alert_id": "xr-88213",
+              "matches": [
+                {
+                  "ticket_id": "SEC-4102",
+                  "status": "open",
+                  "match_type": "exact",
+                  "reason": "same repo + component + CVE",
+                  "resolution_note": null,
+                  "alert_ids": []
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "checkout-api"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "payments-platform"
+              ],
+              "slack": [
+                "#payments-platform"
+              ],
+              "on_call": [
+                "pagerduty:payments-platform"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      },
+      {
+        "alert_id": "xr-88240",
+        "action": "link",
+        "problems": [],
+        "why": "An exact match was found for open ticket SEC-4102 covering the same repo, component, and CVE, so this alert is linked to it.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "xr-88240"
+            },
+            "result": {
+              "alert_id": "xr-88240",
+              "matches": [
+                {
+                  "ticket_id": "SEC-4102",
+                  "status": "open",
+                  "match_type": "exact",
+                  "reason": "same repo + component + CVE",
+                  "resolution_note": null,
+                  "alert_ids": [
+                    "xr-88213"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "checkout-api"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "payments-platform"
+              ],
+              "slack": [
+                "#payments-platform"
+              ],
+              "on_call": [
+                "pagerduty:payments-platform"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-001",
+    "action": "create",
+    "alert_ids": [
+      "xr-88301"
+    ],
+    "severity": "Sev-0",
+    "raw_scores": [
+      "cvss 9.1"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "identity-platform"
+      ],
+      "slack": [
+        "#identity-platform"
+      ],
+      "on_call": [
+        "pagerduty:identity-platform"
+      ],
+      "tier": "P0"
+    },
+    "sla": "4 business hours",
+    "needs_human": true,
+    "human_reasons": [
+      "UNVERIFIED_MITIGATION",
+      "PRIORITY_DOWNGRADE"
+    ],
+    "summary": "auth-gateway specifies vulnerable dependency jsonwebtoken:8.5.1 (CVE-2022-23540) in its lockfile. While notes indicate production was upgraded to 9.0.0, the repository lockfile has not been updated.",
+    "recommended_priority": "Sev-1",
+    "priority_reason": "Mitigation is claimed in production (upgraded to jsonwebtoken 9.0.0 per SEC-4055), but the lockfile in this branch remains unpatched with version 8.5.1, making the fix unverified.",
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "xr-88301",
+        "action": "create",
+        "problems": [],
+        "why": "find_matching_tickets returned no matching tickets for alert xr-88301, so a new ticket must be created. Recommended priority is lowered to Sev-1 with UNVERIFIED_MITIGATION because production is reportedly patched but unverified in this repository branch.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "xr-88301"
+            },
+            "result": {
+              "alert_id": "xr-88301",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "auth-gateway"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "identity-platform"
+              ],
+              "slack": [
+                "#identity-platform"
+              ],
+              "on_call": [
+                "pagerduty:identity-platform"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-002",
+    "action": "create",
+    "alert_ids": [
+      "cs-51290"
+    ],
+    "severity": "Sev-0",
+    "raw_scores": [
+      "label Critical"
+    ],
+    "routing": {
+      "mode": "manual",
+      "teams": [
+        "payments-platform",
+        "data-platform"
+      ],
+      "slack": [
+        "#payments-platform",
+        "#data-platform"
+      ],
+      "on_call": [
+        "pagerduty:payments-platform",
+        "pagerduty:data-platform"
+      ],
+      "tier": "P1"
+    },
+    "sla": "4 business hours",
+    "needs_human": true,
+    "human_reasons": [
+      "CO_OWNED"
+    ],
+    "summary": "A hardcoded secret was detected in src/config/secrets.py in the billing-worker repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [
+      "TIMESTAMP_SUSPECT"
+    ],
+    "trace": [
+      {
+        "alert_id": "cs-51290",
+        "action": "create",
+        "problems": [],
+        "why": "No matching tickets were found for alert cs-51290, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cs-51290"
+            },
+            "result": {
+              "alert_id": "cs-51290",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "billing-worker"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "payments-platform",
+                "data-platform"
+              ],
+              "slack": [
+                "#payments-platform",
+                "#data-platform"
+              ],
+              "on_call": [
+                "pagerduty:payments-platform",
+                "pagerduty:data-platform"
+              ],
+              "tier": "P1",
+              "co_owned": true,
+              "note": "Jointly maintained since the Q1 billing-events migration. No single owning team of record yet."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "SEC-4110",
+    "action": "link",
+    "alert_ids": [
+      "cs-51301",
+      "cs-51385"
+    ],
+    "severity": "Sev-2",
+    "raw_scores": [
+      "label Medium",
+      "label Medium"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "search-platform"
+      ],
+      "slack": [
+        "#search-platform"
+      ],
+      "on_call": [
+        "pagerduty:search-platform"
+      ],
+      "tier": "P1"
+    },
+    "sla": "3 business days",
+    "needs_human": true,
+    "human_reasons": [
+      "AMBIGUOUS_DUPLICATE"
+    ],
+    "summary": "Outdated TLS configuration detected in infra/nginx.conf for the search-indexer repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [
+      "TIMESTAMP_SUSPECT"
+    ],
+    "trace": [
+      {
+        "alert_id": "cs-51301",
+        "action": "link",
+        "problems": [],
+        "why": "Linked to existing open ticket SEC-4110 based on a partial match (same repository and rule, but ticket lacks file information), flagged with AMBIGUOUS_DUPLICATE for human verification.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cs-51301"
+            },
+            "result": {
+              "alert_id": "cs-51301",
+              "matches": [
+                {
+                  "ticket_id": "SEC-4110",
+                  "status": "open",
+                  "match_type": "partial",
+                  "reason": "same repo + rule, but the ticket has no file",
+                  "resolution_note": null,
+                  "alert_ids": []
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "search-indexer"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "search-platform"
+              ],
+              "slack": [
+                "#search-platform"
+              ],
+              "on_call": [
+                "pagerduty:search-platform"
+              ],
+              "tier": "P1",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      },
+      {
+        "alert_id": "cs-51385",
+        "action": "link",
+        "problems": [],
+        "why": "Linked to ticket SEC-4110 based on a partial match (same repo and rule, but existing ticket lacks file info); flagged with AMBIGUOUS_DUPLICATE for human confirmation.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cs-51385"
+            },
+            "result": {
+              "alert_id": "cs-51385",
+              "matches": [
+                {
+                  "ticket_id": "SEC-4110",
+                  "status": "open",
+                  "match_type": "partial",
+                  "reason": "same repo + rule, but the ticket has no file",
+                  "resolution_note": null,
+                  "alert_ids": [
+                    "cs-51301"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "search-indexer"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "search-platform"
+              ],
+              "slack": [
+                "#search-platform"
+              ],
+              "on_call": [
+                "pagerduty:search-platform"
+              ],
+              "tier": "P1",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-003",
+    "action": "create",
+    "alert_ids": [
+      "cs-51322"
+    ],
+    "severity": "Sev-1",
+    "raw_scores": [
+      "label High"
+    ],
+    "routing": {
+      "mode": "manual",
+      "teams": [],
+      "slack": [],
+      "on_call": [
+        "security-lead-oncall"
+      ],
+      "tier": null
+    },
+    "sla": "1 business day",
+    "needs_human": true,
+    "human_reasons": [
+      "NOT_IN_CATALOG"
+    ],
+    "summary": "An insecure deserialization vulnerability was detected in relay/decode.go within the internal-metrics-relay repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [
+      "TIMESTAMP_SUSPECT"
+    ],
+    "trace": [
+      {
+        "alert_id": "cs-51322",
+        "action": "create",
+        "problems": [],
+        "why": "No existing tickets were found matching alert cs-51322, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cs-51322"
+            },
+            "result": {
+              "alert_id": "cs-51322",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "internal-metrics-relay"
+            },
+            "result": {
+              "found": false,
+              "reason": "not in service catalog"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "SEC-3987",
+    "action": "reopen",
+    "alert_ids": [
+      "cp-77010",
+      "cp-77011",
+      "cp-77013",
+      "cp-77016",
+      "cp-77022"
+    ],
+    "severity": "Sev-0",
+    "raw_scores": [
+      "risk 88",
+      "risk 88",
+      "risk 91",
+      "risk 88",
+      "risk 90"
+    ],
+    "routing": {
+      "mode": "manual",
+      "teams": [],
+      "slack": [],
+      "on_call": [
+        "security-lead-oncall"
+      ],
+      "tier": null
+    },
+    "sla": "4 business hours",
+    "needs_human": true,
+    "human_reasons": [
+      "NOT_IN_CATALOG",
+      "RECURRENCE"
+    ],
+    "summary": "The S3 bucket arn:aws:s3:::jfrog-legacy-reporting-exports has a public-read ACL enabled, publicly exposing reporting export files.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "cp-77010",
+        "action": "reopen",
+        "problems": [],
+        "why": "An exact match was found with resolved ticket SEC-3987 (same resource ARN and finding type), so the ticket is being reopened due to recurrence.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77010"
+            },
+            "result": {
+              "alert_id": "cp-77010",
+              "matches": [
+                {
+                  "ticket_id": "SEC-3987",
+                  "status": "resolved",
+                  "match_type": "exact",
+                  "reason": "same resource ARN + finding type",
+                  "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.",
+                  "alert_ids": []
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "legacy-reporting"
+            },
+            "result": {
+              "found": false,
+              "reason": "not in service catalog"
+            }
+          }
+        ]
+      },
+      {
+        "alert_id": "cp-77011",
+        "action": "link",
+        "problems": [],
+        "why": "Found an exact match with open ticket SEC-3987 for the same resource ARN and finding type, so linking to the existing ticket.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77011"
+            },
+            "result": {
+              "alert_id": "cp-77011",
+              "matches": [
+                {
+                  "ticket_id": "SEC-3987",
+                  "status": "open",
+                  "match_type": "exact",
+                  "reason": "same resource ARN + finding type",
+                  "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.",
+                  "alert_ids": [
+                    "cp-77010"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "legacy-reporting"
+            },
+            "result": {
+              "found": false,
+              "reason": "not in service catalog"
+            }
+          }
+        ]
+      },
+      {
+        "alert_id": "cp-77013",
+        "action": "link",
+        "problems": [],
+        "why": "Linked to open ticket SEC-3987 because find_matching_tickets returned an exact match for the same resource ARN and finding type.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77013"
+            },
+            "result": {
+              "alert_id": "cp-77013",
+              "matches": [
+                {
+                  "ticket_id": "SEC-3987",
+                  "status": "open",
+                  "match_type": "exact",
+                  "reason": "same resource ARN + finding type",
+                  "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.",
+                  "alert_ids": [
+                    "cp-77010",
+                    "cp-77011"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "legacy-reporting"
+            },
+            "result": {
+              "found": false,
+              "reason": "not in service catalog"
+            }
+          }
+        ]
+      },
+      {
+        "alert_id": "cp-77016",
+        "action": "link",
+        "problems": [],
+        "why": "An exact match was found with existing open ticket SEC-3987 for the same resource ARN and finding type.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77016"
+            },
+            "result": {
+              "alert_id": "cp-77016",
+              "matches": [
+                {
+                  "ticket_id": "SEC-3987",
+                  "status": "open",
+                  "match_type": "exact",
+                  "reason": "same resource ARN + finding type",
+                  "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.",
+                  "alert_ids": [
+                    "cp-77010",
+                    "cp-77011",
+                    "cp-77013"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "legacy-reporting"
+            },
+            "result": {
+              "found": false,
+              "reason": "not in service catalog"
+            }
+          }
+        ]
+      },
+      {
+        "alert_id": "cp-77022",
+        "action": "link",
+        "problems": [],
+        "why": "Linked to open ticket SEC-3987 based on an exact match for the resource ARN and finding type.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77022"
+            },
+            "result": {
+              "alert_id": "cp-77022",
+              "matches": [
+                {
+                  "ticket_id": "SEC-3987",
+                  "status": "open",
+                  "match_type": "exact",
+                  "reason": "same resource ARN + finding type",
+                  "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.",
+                  "alert_ids": [
+                    "cp-77010",
+                    "cp-77011",
+                    "cp-77013",
+                    "cp-77016"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "legacy-reporting"
+            },
+            "result": {
+              "found": false,
+              "reason": "not in service catalog"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-004",
+    "action": "create",
+    "alert_ids": [
+      "cp-77104"
+    ],
+    "severity": "Sev-2",
+    "raw_scores": [
+      "risk 41"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "platform-infra"
+      ],
+      "slack": [
+        "#platform-infra"
+      ],
+      "on_call": [
+        "pagerduty:platform-infra"
+      ],
+      "tier": "P2"
+    },
+    "sla": "1 week",
+    "needs_human": true,
+    "human_reasons": [
+      "ARN_UNPARSEABLE"
+    ],
+    "summary": "An unencrypted queue resource was detected for arn:aws:notification-service-queue in notification-service.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [
+      "ARN_UNPARSEABLE"
+    ],
+    "trace": [
+      {
+        "alert_id": "cp-77104",
+        "action": "create",
+        "problems": [],
+        "why": "No matching tickets were found for alert cp-77104, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77104"
+            },
+            "result": {
+              "alert_id": "cp-77104",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "notification-service"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "platform-infra"
+              ],
+              "slack": [
+                "#platform-infra"
+              ],
+              "on_call": [
+                "pagerduty:platform-infra"
+              ],
+              "tier": "P2",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-005",
+    "action": "create",
+    "alert_ids": [
+      "xr-88355"
+    ],
+    "severity": "Sev-1",
+    "raw_scores": [
+      "cvss 8.6"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "artifact-core"
+      ],
+      "slack": [
+        "#artifact-core"
+      ],
+      "on_call": [
+        "pagerduty:artifact-core"
+      ],
+      "tier": "P0"
+    },
+    "sla": "1 business day",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "A Sev-1 vulnerability (CVE-2023-39325) was detected in dependency golang.org/x/net:0.17.0 within artifact-gateway.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "xr-88355",
+        "action": "create",
+        "problems": [],
+        "why": "No matching tickets were found for alert xr-88355, so creating a new ticket.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "xr-88355"
+            },
+            "result": {
+              "alert_id": "xr-88355",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "artifact-gateway"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "artifact-core"
+              ],
+              "slack": [
+                "#artifact-core"
+              ],
+              "on_call": [
+                "pagerduty:artifact-core"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-006",
+    "action": "create",
+    "alert_ids": [
+      "xr-88361"
+    ],
+    "severity": "Sev-2",
+    "raw_scores": [
+      "cvss 6.1"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "identity-platform"
+      ],
+      "slack": [
+        "#identity-platform"
+      ],
+      "on_call": [
+        "pagerduty:identity-platform"
+      ],
+      "tier": "P0"
+    },
+    "sla": "3 business days",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "A vulnerability (CVE-2023-45857) was identified in package axios:1.3.2 within the auth-gateway repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "xr-88361",
+        "action": "create",
+        "problems": [],
+        "why": "No existing tickets were found matching this finding, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "xr-88361"
+            },
+            "result": {
+              "alert_id": "xr-88361",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "auth-gateway"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "identity-platform"
+              ],
+              "slack": [
+                "#identity-platform"
+              ],
+              "on_call": [
+                "pagerduty:identity-platform"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-007",
+    "action": "create",
+    "alert_ids": [
+      "xr-88374"
+    ],
+    "severity": "Sev-3",
+    "raw_scores": [
+      "cvss 3.2"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "search-platform"
+      ],
+      "slack": [
+        "#search-platform"
+      ],
+      "on_call": [
+        "pagerduty:search-platform"
+      ],
+      "tier": "P1"
+    },
+    "sla": "1 week",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "A Sev-3 vulnerability (CVE-2020-14343) was detected in dependency pyyaml:5.3.1 in the search-indexer repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "xr-88374",
+        "action": "create",
+        "problems": [],
+        "why": "No existing matching tickets were found for this finding, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "xr-88374"
+            },
+            "result": {
+              "alert_id": "xr-88374",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "search-indexer"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "search-platform"
+              ],
+              "slack": [
+                "#search-platform"
+              ],
+              "on_call": [
+                "pagerduty:search-platform"
+              ],
+              "tier": "P1",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-008",
+    "action": "create",
+    "alert_ids": [
+      "xr-88390"
+    ],
+    "severity": "Sev-1",
+    "raw_scores": [
+      "cvss 7.8"
+    ],
+    "routing": {
+      "mode": "manual",
+      "teams": [
+        "payments-platform",
+        "data-platform"
+      ],
+      "slack": [
+        "#payments-platform",
+        "#data-platform"
+      ],
+      "on_call": [
+        "pagerduty:payments-platform",
+        "pagerduty:data-platform"
+      ],
+      "tier": "P1"
+    },
+    "sla": "1 business day",
+    "needs_human": true,
+    "human_reasons": [
+      "CO_OWNED"
+    ],
+    "summary": "A Sev-1 vulnerability (CVE-2021-36090) was detected in dependency org.apache.commons:commons-compress:1.20 within billing-worker.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "xr-88390",
+        "action": "create",
+        "problems": [],
+        "why": "No matching tickets were found for alert xr-88390, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "xr-88390"
+            },
+            "result": {
+              "alert_id": "xr-88390",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "billing-worker"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "payments-platform",
+                "data-platform"
+              ],
+              "slack": [
+                "#payments-platform",
+                "#data-platform"
+              ],
+              "on_call": [
+                "pagerduty:payments-platform",
+                "pagerduty:data-platform"
+              ],
+              "tier": "P1",
+              "co_owned": true,
+              "note": "Jointly maintained since the Q1 billing-events migration. No single owning team of record yet."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-009",
+    "action": "create",
+    "alert_ids": [
+      "cs-51340"
+    ],
+    "severity": "Sev-3",
+    "raw_scores": [
+      "label Low"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "developer-experience"
+      ],
+      "slack": [
+        "#devex"
+      ],
+      "on_call": [],
+      "tier": "P3"
+    },
+    "sla": "best effort",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "A missing Content Security Policy (CSP) header was detected in server/headers.js in the docs-site repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [
+      "TIMESTAMP_SUSPECT"
+    ],
+    "trace": [
+      {
+        "alert_id": "cs-51340",
+        "action": "create",
+        "problems": [],
+        "why": "No matching tickets were found for alert cs-51340, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cs-51340"
+            },
+            "result": {
+              "alert_id": "cs-51340",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "docs-site"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "developer-experience"
+              ],
+              "slack": [
+                "#devex"
+              ],
+              "on_call": [],
+              "tier": "P3",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-010",
+    "action": "create",
+    "alert_ids": [
+      "cs-51358"
+    ],
+    "severity": "Sev-1",
+    "raw_scores": [
+      "label High"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "platform-infra"
+      ],
+      "slack": [
+        "#platform-infra"
+      ],
+      "on_call": [
+        "pagerduty:platform-infra"
+      ],
+      "tier": "P2"
+    },
+    "sla": "3 business days",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "A potential SQL injection vulnerability was detected in src/handlers/query_builder.py in the notification-service repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [
+      "TIMESTAMP_SUSPECT"
+    ],
+    "trace": [
+      {
+        "alert_id": "cs-51358",
+        "action": "create",
+        "problems": [],
+        "why": "No existing matching tickets were found for alert cs-51358, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cs-51358"
+            },
+            "result": {
+              "alert_id": "cs-51358",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "notification-service"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "platform-infra"
+              ],
+              "slack": [
+                "#platform-infra"
+              ],
+              "on_call": [
+                "pagerduty:platform-infra"
+              ],
+              "tier": "P2",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-011",
+    "action": "create",
+    "alert_ids": [
+      "cs-51371"
+    ],
+    "severity": "Sev-0",
+    "raw_scores": [
+      "label Critical"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "payments-platform"
+      ],
+      "slack": [
+        "#payments-platform"
+      ],
+      "on_call": [
+        "pagerduty:payments-platform"
+      ],
+      "tier": "P0"
+    },
+    "sla": "4 business hours",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "A hardcoded secret was detected in src/payments/stripe_client.py in the checkout-api repository.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [
+      "TIMESTAMP_SUSPECT"
+    ],
+    "trace": [
+      {
+        "alert_id": "cs-51371",
+        "action": "create",
+        "problems": [],
+        "why": "No existing tickets were found matching this finding, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cs-51371"
+            },
+            "result": {
+              "alert_id": "cs-51371",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "checkout-api"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "payments-platform"
+              ],
+              "slack": [
+                "#payments-platform"
+              ],
+              "on_call": [
+                "pagerduty:payments-platform"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-012",
+    "action": "create",
+    "alert_ids": [
+      "cp-77140"
+    ],
+    "severity": "Sev-2",
+    "raw_scores": [
+      "risk 57"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "artifact-core"
+      ],
+      "slack": [
+        "#artifact-core"
+      ],
+      "on_call": [
+        "pagerduty:artifact-core"
+      ],
+      "tier": "P0"
+    },
+    "sla": "3 business days",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "The IAM role arn:aws:iam::role/artifact-gateway-deploy-role in artifact-gateway is overly permissive.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "cp-77140",
+        "action": "create",
+        "problems": [],
+        "why": "No existing tickets match this finding, so a new ticket must be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77140"
+            },
+            "result": {
+              "alert_id": "cp-77140",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "artifact-gateway"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "artifact-core"
+              ],
+              "slack": [
+                "#artifact-core"
+              ],
+              "on_call": [
+                "pagerduty:artifact-core"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-013",
+    "action": "create",
+    "alert_ids": [
+      "cp-77152"
+    ],
+    "severity": "Sev-1",
+    "raw_scores": [
+      "risk 64"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "identity-platform"
+      ],
+      "slack": [
+        "#identity-platform"
+      ],
+      "on_call": [
+        "pagerduty:identity-platform"
+      ],
+      "tier": "P0"
+    },
+    "sla": "1 business day",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "The RDS database instance auth-gateway-sessions-db has unencrypted storage.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "cp-77152",
+        "action": "create",
+        "problems": [],
+        "why": "No existing tickets were found matching alert cp-77152, so a new ticket is being created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77152"
+            },
+            "result": {
+              "alert_id": "cp-77152",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "auth-gateway"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "identity-platform"
+              ],
+              "slack": [
+                "#identity-platform"
+              ],
+              "on_call": [
+                "pagerduty:identity-platform"
+              ],
+              "tier": "P0",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-014",
+    "action": "create",
+    "alert_ids": [
+      "cp-77168"
+    ],
+    "severity": "Sev-1",
+    "raw_scores": [
+      "risk 72"
+    ],
+    "routing": {
+      "mode": "manual",
+      "teams": [],
+      "slack": [],
+      "on_call": [
+        "security-lead-oncall"
+      ],
+      "tier": null
+    },
+    "sla": "1 business day",
+    "needs_human": true,
+    "human_reasons": [
+      "NOT_IN_CATALOG"
+    ],
+    "summary": "The S3 bucket arn:aws:s3:::jfrog-metrics-relay-cold-storage has a public-read ACL configured, potentially exposing internal metrics relay data to the public.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "cp-77168",
+        "action": "create",
+        "problems": [],
+        "why": "No matching tickets were found for alert cp-77168, so a new ticket should be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77168"
+            },
+            "result": {
+              "alert_id": "cp-77168",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "internal-metrics-relay"
+            },
+            "result": {
+              "found": false,
+              "reason": "not in service catalog"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ticket_id": "NEW-015",
+    "action": "create",
+    "alert_ids": [
+      "cp-77179"
+    ],
+    "severity": "Sev-3",
+    "raw_scores": [
+      "risk 22"
+    ],
+    "routing": {
+      "mode": "auto",
+      "teams": [
+        "platform-infra"
+      ],
+      "slack": [
+        "#platform-infra"
+      ],
+      "on_call": [
+        "pagerduty:platform-infra"
+      ],
+      "tier": "P2"
+    },
+    "sla": "best effort",
+    "needs_human": false,
+    "human_reasons": [],
+    "summary": "The SQS queue notification-service-retry-queue is unencrypted.",
+    "recommended_priority": null,
+    "priority_reason": null,
+    "flags": [],
+    "trace": [
+      {
+        "alert_id": "cp-77179",
+        "action": "create",
+        "problems": [],
+        "why": "No matching tickets were found for alert cp-77179, so a new ticket should be created.",
+        "tool_calls": [
+          {
+            "tool": "find_matching_tickets",
+            "args": {
+              "alert_id": "cp-77179"
+            },
+            "result": {
+              "alert_id": "cp-77179",
+              "matches": []
+            }
+          },
+          {
+            "tool": "lookup_owner",
+            "args": {
+              "repo": "notification-service"
+            },
+            "result": {
+              "found": true,
+              "teams": [
+                "platform-infra"
+              ],
+              "slack": [
+                "#platform-infra"
+              ],
+              "on_call": [
+                "pagerduty:platform-infra"
+              ],
+              "tier": "P2",
+              "co_owned": false,
+              "note": null
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

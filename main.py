@@ -16,6 +16,7 @@ import tools
 from agent import AgentError, run_agent
 from models import NormalizedAlert
 from normalize import InvalidAlert, load_alerts, normalize
+from routing import route
 
 DATA = Path(__file__).parent / "data"
 DEFAULT_ALERTS = DATA / "alerts.json"
@@ -45,8 +46,10 @@ def apply_to_store(action: str, linked_ticket_id: str | None, alert: NormalizedA
 
 def triage(alert: NormalizedAlert) -> dict:
     """Decide what happens to one alert, and return everything the output record needs."""
-    routing = guardrails.route(alert)
+    routing = route(alert)
     human_reasons = routing.pop("human_reasons")  # routing keeps only who and where
+    if "ARN_UNPARSEABLE" in alert.flags:
+        human_reasons.append("ARN_UNPARSEABLE")  # the duplicate check was skipped, so a human confirms
 
     try:
         decision, trace = run_agent(alert)

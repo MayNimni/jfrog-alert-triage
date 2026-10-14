@@ -5,31 +5,8 @@ from pathlib import Path
 import guardrails
 import store
 from models import AgentDecision
-from normalize import normalize
 
 DATA = Path(__file__).parent.parent / "data"
-
-
-def cloud_alert(repo):
-    return normalize({
-        "source": "cloud-posture", "finding_id": "cp-1", "repo": repo,
-        "resource_arn": "arn:aws:s3:::some-bucket", "finding_type": "public-read-acl",
-        "risk_score": 88, "first_seen": "19/09/2026 09:15",
-    })
-
-
-def test_unknown_service_goes_to_a_human_not_a_guessed_team():
-    routing = guardrails.route(cloud_alert("legacy-reporting"))
-    assert routing["mode"] == "manual"
-    assert routing["teams"] == []
-    assert routing["human_reasons"] == ["NOT_IN_CATALOG"]
-
-
-def test_co_owned_service_notifies_both_teams_but_picks_neither():
-    routing = guardrails.route(cloud_alert("billing-worker"))
-    assert routing["mode"] == "manual"
-    assert routing["slack"] == ["#payments-platform", "#data-platform"]
-    assert routing["human_reasons"] == ["CO_OWNED"]
 
 
 def test_a_ticket_id_no_tool_returned_is_caught_as_a_hallucination():
@@ -71,3 +48,8 @@ def test_code_adds_the_human_reason_the_model_forgot():
     resolved = tool_found("SEC-3987", "exact", "resolved")
     assert guardrails.reasons_the_model_missed(decide("link", "SEC-4110"), partial) == ["AMBIGUOUS_DUPLICATE"]
     assert guardrails.reasons_the_model_missed(decide("reopen", "SEC-3987"), resolved) == ["RECURRENCE"]
+
+
+def test_create_next_to_a_partial_match_goes_to_a_human():
+    partial = tool_found("SEC-4110", "partial", "open")
+    assert guardrails.reasons_the_model_missed(decide("create"), partial) == ["AMBIGUOUS_DUPLICATE"]

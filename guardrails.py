@@ -1,11 +1,8 @@
-"""Code enforces what the model must not decide: routing, SLA, and checks on the model's answer."""
+"""Code enforces what the model must not decide: SLA, and checks on the model's answer.
+Routing lives in routing.py."""
 
 import store
 from models import AgentDecision, NormalizedAlert
-from tools import lookup_owner
-
-# Policy §3 names this role, but no data file lists it. A placeholder until we know who it is.
-SECURITY_LEAD_ON_CALL = "security-lead-oncall"
 
 # Policy §2: SLA by normalized severity and service tier.
 SLA = {
@@ -18,36 +15,7 @@ SLA = {
 SEVERITY_ORDER = ["Sev-0", "Sev-1", "Sev-2", "Sev-3"]  # most urgent first
 
 
-# --- Routing (policy §3) ---
-
-def route(alert: NormalizedAlert) -> dict:
-    """Who gets the ticket. Never guesses: co-owned or unknown services go to a human."""
-    owner = lookup_owner(alert.repo)
-
-    if not owner["found"]:
-        return {
-            "mode": "manual",
-            "teams": [],
-            "slack": [],
-            "on_call": [SECURITY_LEAD_ON_CALL],
-            "tier": None,
-            "human_reasons": ["NOT_IN_CATALOG"],
-        }
-
-    routing = {
-        "mode": "auto",
-        "teams": owner["teams"],
-        "slack": owner["slack"],
-        "on_call": owner["on_call"],
-        "tier": owner["tier"],
-        "human_reasons": [],
-    }
-    if owner["co_owned"]:
-        # Notify every listed team, but don't pick one.
-        routing["mode"] = "manual"
-        routing["human_reasons"] = ["CO_OWNED"]
-    return routing
-
+# --- SLA (policy §2) ---
 
 def sla_label(severity: str, tier: str | None) -> str:
     """The SLA as a label. An unknown tier gets the strictest column, to fail safe."""
@@ -106,6 +74,12 @@ def check_decision(decision: AgentDecision, trace: list[dict]) -> list[str]:
 
 def reasons_the_model_missed(decision: AgentDecision, trace: list[dict]) -> list[str]:
     """Human reasons the tool results call for, but the model left out. Code adds them."""
+    if decision.action == "create":
+        # A partial match may be the same finding: a new ticket could be a duplicate.
+        partial = any(m["match_type"] == "partial" for m in matches_returned_by_tools(trace))
+        if partial and "AMBIGUOUS_DUPLICATE" not in decision.judgment_reasons:
+            return ["AMBIGUOUS_DUPLICATE"]
+        return []
     match = match_for_ticket(decision.linked_ticket_id, trace)
     if match is None:
         return []

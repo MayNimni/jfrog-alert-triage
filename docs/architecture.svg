@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 540" width="1380" height="540" role="img" aria-label="Alert triage pipeline: code normalizes and routes each alert, the LLM only proposes an action, and code checks that answer before writing the ticket. Anything uncertain goes to a human." font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+  </defs>
+
+  <rect width="1380" height="540" fill="#ffffff"/>
+
+  <!-- Arrows (drawn first so boxes sit on top) -->
+  <g stroke="#334155" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+    <line x1="140" y1="185" x2="188" y2="185"/>
+    <line x1="340" y1="185" x2="408" y2="185"/>
+    <polyline points="265,220 265,415 408,415"/>
+    <line x1="560" y1="185" x2="798" y2="185"/>
+    <polyline points="560,210 680,210 680,258" marker-start="url(#arrow)"/>
+    <polyline points="560,395 680,395 680,332"/>
+    <polyline points="560,435 1090,435 1090,222"/>
+    <line x1="750" y1="275" x2="798" y2="275"/>
+    <line x1="750" y1="325" x2="798" y2="325"/>
+    <line x1="960" y1="185" x2="1018" y2="185"/>
+    <line x1="1160" y1="185" x2="1218" y2="185"/>
+    <line x1="265" y1="150" x2="265" y2="82"/>
+    <line x1="880" y1="150" x2="880" y2="82"/>
+    <line x1="1285" y1="150" x2="1285" y2="82"/>
+  </g>
+
+  <!-- Arrow labels -->
+  <g font-size="12" fill="#334155">
+    <text x="375" y="178" text-anchor="middle">alert</text>
+    <text x="275" y="405">alert</text>
+    <text x="680" y="178" text-anchor="middle">AgentDecision (no team field)</text>
+    <text x="690" y="240">tool calls</text>
+    <text x="690" y="368">lookup_owner</text>
+    <text x="690" y="383" fill="#64748b">(same function)</text>
+    <text x="825" y="427" text-anchor="middle">teams · on-call · tier</text>
+    <text x="990" y="178" text-anchor="middle">passes</text>
+    <text x="275" y="120">bad input</text>
+    <text x="890" y="120">check fails</text>
+    <text x="1275" y="120" text-anchor="end">any human reason</text>
+  </g>
+
+  <!-- Human row -->
+  <g fill="#fee2e2" stroke="#b91c1c" stroke-width="1.6">
+    <rect x="190" y="30" width="150" height="50" rx="25"/>
+    <rect x="800" y="30" width="160" height="50" rx="25"/>
+    <rect x="1220" y="30" width="130" height="50" rx="25"/>
+  </g>
+  <g font-size="13" fill="#0f172a" text-anchor="middle">
+    <text x="265" y="51" font-weight="bold">Human review</text>
+    <text x="265" y="68" font-size="12">INVALID_INPUT</text>
+    <text x="880" y="51" font-weight="bold">Human review</text>
+    <text x="880" y="68" font-size="12">LLM_ERROR</text>
+    <text x="1285" y="51" font-weight="bold">Human review</text>
+    <text x="1285" y="68" font-size="12">needs_human</text>
+  </g>
+
+  <!-- Data -->
+  <g fill="#f1f5f9" stroke="#64748b" stroke-width="1.6">
+    <rect x="20" y="150" width="120" height="70" rx="4"/>
+    <rect x="800" y="255" width="150" height="40" rx="4"/>
+    <rect x="800" y="305" width="150" height="40" rx="4"/>
+    <rect x="1220" y="150" width="130" height="70" rx="4"/>
+  </g>
+  <g font-size="12" fill="#0f172a" text-anchor="middle">
+    <text x="80" y="181" font-weight="bold" font-size="13">alerts.json</text>
+    <text x="80" y="199">24 sample alerts</text>
+    <text x="875" y="279">store.py · tickets</text>
+    <text x="875" y="329">service_catalog.json</text>
+    <text x="1285" y="181" font-weight="bold" font-size="13">results.json</text>
+    <text x="1285" y="199">one record / ticket</text>
+  </g>
+
+  <!-- Code -->
+  <g fill="#dbeafe" stroke="#2563eb" stroke-width="1.6">
+    <rect x="190" y="150" width="150" height="70" rx="6"/>
+    <rect x="410" y="380" width="150" height="70" rx="6"/>
+    <rect x="610" y="260" width="140" height="70" rx="6"/>
+    <rect x="800" y="150" width="160" height="70" rx="6"/>
+    <rect x="1020" y="150" width="140" height="70" rx="6"/>
+  </g>
+  <g font-size="12" fill="#0f172a" text-anchor="middle">
+    <text x="265" y="178" font-weight="bold" font-size="14">normalize.py</text>
+    <text x="265" y="197">severity · UTC · flags</text>
+    <text x="485" y="408" font-weight="bold" font-size="14">routing.py</text>
+    <text x="485" y="427">who gets the ticket</text>
+    <text x="680" y="288" font-weight="bold" font-size="14">tools.py</text>
+    <text x="680" y="307">owners · matches</text>
+    <text x="880" y="178" font-weight="bold" font-size="14">guardrails.py</text>
+    <text x="880" y="197">checks the answer</text>
+    <text x="1090" y="178" font-weight="bold" font-size="14">main.py</text>
+    <text x="1090" y="197">ticket + SLA</text>
+  </g>
+
+  <!-- LLM -->
+  <rect x="410" y="150" width="150" height="70" rx="6" fill="#ffedd5" stroke="#c2410c" stroke-width="1.6"/>
+  <g font-size="12" fill="#0f172a" text-anchor="middle">
+    <text x="485" y="178" font-weight="bold" font-size="14">agent.py · LLM</text>
+    <text x="485" y="197">proposes the action</text>
+  </g>
+
+  <!-- Legend -->
+  <g font-size="12" fill="#334155">
+    <rect x="20" y="495" width="14" height="14" rx="3" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="40" y="506">code: fixed rules, tested</text>
+    <rect x="210" y="495" width="14" height="14" rx="3" fill="#ffedd5" stroke="#c2410c"/>
+    <text x="230" y="506">LLM: judgment only</text>
+    <rect x="370" y="495" width="14" height="14" rx="3" fill="#fee2e2" stroke="#b91c1c"/>
+    <text x="390" y="506">a human decides</text>
+    <rect x="510" y="495" width="14" height="14" rx="3" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="530" y="506">data</text>
+  </g>
+</svg>
