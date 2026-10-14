@@ -8,6 +8,8 @@ Usage:
 
 import argparse
 import json
+import os
+import sys
 from pathlib import Path
 
 import guardrails
@@ -16,6 +18,7 @@ import tools
 from agent import AgentError, run_agent
 from models import NormalizedAlert
 from normalize import InvalidAlert, load_alerts, normalize
+from report import write_report
 from routing import route
 
 DATA = Path(__file__).parent / "data"
@@ -118,6 +121,21 @@ def add_to_records(records: dict, alert: NormalizedAlert, result: dict) -> None:
     record["trace"].append(result["trace"])
 
 
+def print_decision(alert: NormalizedAlert, result: dict) -> None:
+    """The decision for one alert, readable in the terminal."""
+    routing = result["routing"]
+    decision = result["decision"]
+    human = ", ".join(result["human_reasons"]) or "no"
+    print(f"\n{alert.alert_id}  ({alert.source}, {alert.repo})")
+    print(f"  Decision:  {result['action']} -> {result['ticket_id']}")
+    print(f"  Severity:  {alert.normalized_severity}  ({alert.raw_score})")
+    team = ", ".join(routing["teams"]) or f"unknown -> {', '.join(routing['on_call'])}"
+    print(f"  Team:      {team}   SLA: {guardrails.sla_label(alert.normalized_severity, routing['tier'])}")
+    print(f"  Human:     {human}")
+    if decision:
+        print(f"  Why:       {decision.why}")
+
+
 def main(alerts_path: Path, only_alert_ids: list[str]) -> None:
     store.load_store(DATA / "historical_tickets.json")
     records = {}
@@ -140,12 +158,13 @@ def main(alerts_path: Path, only_alert_ids: list[str]) -> None:
     for alert in alerts:  # one at a time, in file order
         result = triage(alert)
         add_to_records(records, alert, result)
-        print(f"{alert.alert_id}: {result['action']} -> {result['ticket_id']}  {result['human_reasons']}")
+        print_decision(alert, result)
 
     output = output_path(alerts_path)
     output.parent.mkdir(exist_ok=True)
     output.write_text(json.dumps(list(records.values()) + invalid, indent=2))
     print(f"\n{len(alerts)} alerts -> {len(records)} tickets, {len(invalid)} invalid. Written to {output}")
+    print(f"Report: {write_report()}")
 
 
 if __name__ == "__main__":
@@ -153,4 +172,10 @@ if __name__ == "__main__":
     parser.add_argument("alert_ids", nargs="*", help="only run these alert ids (default: all)")
     parser.add_argument("--alerts", type=Path, default=DEFAULT_ALERTS, help="alerts file (default: data/alerts.json)")
     args = parser.parse_args()
+    if not os.environ.get("GOOGLE_API_KEY"):  # agent.py has already loaded .env
+        sys.exit(
+            "No Gemini API key found.\n"
+            "Run:  bash setup.sh YOUR_GEMINI_KEY\n"
+            "Get a free key at https://aistudio.google.com/apikey"
+        )
     main(args.alerts, args.alert_ids)

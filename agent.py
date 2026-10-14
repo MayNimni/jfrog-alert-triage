@@ -1,5 +1,6 @@
 """The triage agent: Gemini decides what to do with one alert, using our two tools."""
 
+import warnings
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -13,6 +14,7 @@ from models import AgentDecision, NormalizedAlert
 from tools import find_matching_tickets, lookup_owner
 
 load_dotenv(Path(__file__).parent / ".env")  # reads GOOGLE_API_KEY
+warnings.filterwarnings("ignore", message=r"\[EXPERIMENTAL\]")  # ADK notice about output_schema; harmless
 
 MODEL = "gemini-3.8-flash"
 MAX_MODEL_CALLS = 6  # a safety limit, so a confused model can't loop forever

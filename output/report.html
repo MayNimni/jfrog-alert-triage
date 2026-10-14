@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alert Triage Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one bright, light-only column; a pale sky band holds the title and run switch, white list below. */
+:root {
+  --bg: #ffffff; --band: #eef5ff; --panel: #ffffff; --text: #18233a; --muted: #5d6b82; --faint: #8d99ad;
+  --line: #e3e9f2; --line-soft: #eef2f7; --accent: #2563eb; --accent-soft: #e3edff;
+  --row-hover: #f6f9ff; --code-bg: #f2f6fc;
+  --sev0: #d62d2d; --sev0-bg: #ffeaea; --sev1: #e26a00; --sev1-bg: #fff1e0;
+  --sev2: #b58a00; --sev2-bg: #fff8d6; --sev3: #5d6b82; --sev3-bg: #edf1f6;
+  --human: #c25e00; --human-bg: #fff3e3; --auto: #13895b; --auto-bg: #e2f7ec;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--text);
+  background: linear-gradient(var(--band) 0 236px, var(--bg) 236px);
+  font: 400 14px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+main { max-width: 1120px; margin: 0 auto; padding: 40px 16px 64px; }
+h1 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 4px; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0 0 28px; }
+
+.tabs { display: inline-flex; gap: 2px; padding: 3px; margin-bottom: 24px;
+  background: #dce8fb; border-radius: 10px; flex-wrap: wrap; }
+.tabs button.chip { border: 0; background: transparent; color: var(--muted); padding: 5px 14px; border-radius: 8px; }
+.tabs button.chip.on { background: var(--panel); color: var(--text); box-shadow: 0 1px 2px rgba(20, 30, 50, .08); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+button.chip { border: 1px solid var(--line); background: transparent; color: var(--muted);
+  padding: 4px 12px; border-radius: 999px; cursor: pointer; font: 500 13px/1.5 var(--sans);
+  transition: background .15s, color .15s, border-color .15s; }
+button.chip:hover { color: var(--text); }
+.filters button.chip.on { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+button.chip:focus-visible, .row:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 0 0 28px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, .06); }
+.stat b { display: block; font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 12.5px; }
+
+.table { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, .05); }
+.row { display: grid; grid-template-columns: 110px 72px minmax(0, 1fr) 220px 112px; gap: 16px; align-items: center;
+  padding: 13px 18px; border-top: 1px solid var(--line-soft); cursor: pointer; transition: background .12s; }
+.row.head { cursor: default; border-top: 0; color: var(--faint); background: #f8fafd; font-size: 11.5px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .06em; padding-block: 11px; }
+.row:not(.head):hover { background: var(--row-hover); }
+.row > div { min-width: 0; overflow-wrap: anywhere; }
+.row .id { font: 500 12.5px/1.4 var(--mono); color: var(--muted); }
+.row .prod { font-size: 13px; line-height: 1.45; }
+
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 1px 9px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; white-space: nowrap; }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .8; }
+.Sev-0 { color: var(--sev0); background: var(--sev0-bg); } .Sev-1 { color: var(--sev1); background: var(--sev1-bg); }
+.Sev-2 { color: var(--sev2); background: var(--sev2-bg); } .Sev-3 { color: var(--sev3); background: var(--sev3-bg); }
+.human { color: var(--human); background: var(--human-bg); } .auto { color: var(--auto); background: var(--auto-bg); }
+.muted { color: var(--muted); }
+
+.detail { padding: 6px 18px 24px 144px; background: var(--row-hover); border-top: 1px solid var(--line-soft); }
+.detail h3 { font-size: 11.5px; font-weight: 500; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; margin: 20px 0 6px; }
+.detail p { margin: 0; max-width: 72ch; }
+.reasons { margin: 0; padding-left: 18px; }
+.reasons li { margin-bottom: 4px; }
+.kv { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 6px 16px; }
+.kv div:nth-child(odd) { color: var(--muted); }
+code, pre { font-family: var(--mono); font-size: 12px; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+pre code, pre { background: var(--code-bg); }
+pre { border: 1px solid var(--line-soft); border-radius: 8px; padding: 12px; overflow-x: auto; margin: 8px 0 0; }
+details { padding: 4px 0; }
+details summary { cursor: pointer; color: var(--accent); }
+@media (max-width: 760px) {
+  .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .row .prod, .row .sla { display: none; }
+  .row.head { display: none; }
+  .detail { padding-left: 18px; }
+  .kv { grid-template-columns: 1fr; gap: 2px; }
+  .kv div:nth-child(even) { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Alert Triage Results</h1>
+  <p class="sub">Each row is one ticket. Click a row to see why the agent decided what it did.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="stats" id="stats"></div>
+  <div class="filters" id="filters"></div>
+  <div class="table" id="table"></div>
+</main>
+<script>
+const RUNS = [{"label": "Sample alerts", "file": "results.json", "records": [{"ticket_id": "SEC-4102", "action": "link", "alert_ids": ["xr-88213", "xr-88240"], "severity": "Sev-1", "raw_scores": ["cvss 7.5", "cvss 7.5"], "routing": {"mode": "auto", "teams": ["payments-platform"], "slack": ["#payments-platform"], "on_call": ["pagerduty:payments-platform"], "tier": "P0"}, "sla": "1 business day", "needs_human": false, "human_reasons": [], "summary": "A Sev-1 vulnerability (CVE-2020-36518) was detected in jackson-databind version 2.9.8 within the checkout-api repository.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "xr-88213", "action": "link", "problems": [], "why": "An open ticket (SEC-4102) was found with an exact match for the same repo, component, and CVE, so this alert is linked to it.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-88213"}, "result": {"alert_id": "xr-88213", "matches": [{"ticket_id": "SEC-4102", "status": "open", "match_type": "exact", "reason": "same repo + component + CVE", "resolution_note": null, "alert_ids": []}]}}, {"tool": "lookup_owner", "args": {"repo": "checkout-api"}, "result": {"found": true, "teams": ["payments-platform"], "slack": ["#payments-platform"], "on_call": ["pagerduty:payments-platform"], "tier": "P0", "co_owned": false, "note": null}}]}, {"alert_id": "xr-88240", "action": "link", "problems": [], "why": "An exact match was found for open ticket SEC-4102 covering the same repo, component, and CVE, so this alert is linked to it.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-88240"}, "result": {"alert_id": "xr-88240", "matches": [{"ticket_id": "SEC-4102", "status": "open", "match_type": "exact", "reason": "same repo + component + CVE", "resolution_note": null, "alert_ids": ["xr-88213"]}]}}, {"tool": "lookup_owner", "args": {"repo": "checkout-api"}, "result": {"found": true, "teams": ["payments-platform"], "slack": ["#payments-platform"], "on_call": ["pagerduty:payments-platform"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-001", "action": "create", "alert_ids": ["xr-88301"], "severity": "Sev-0", "raw_scores": ["cvss 9.1"], "routing": {"mode": "auto", "teams": ["identity-platform"], "slack": ["#identity-platform"], "on_call": ["pagerduty:identity-platform"], "tier": "P0"}, "sla": "4 business hours", "needs_human": true, "human_reasons": ["UNVERIFIED_MITIGATION", "PRIORITY_DOWNGRADE"], "summary": "auth-gateway specifies vulnerable dependency jsonwebtoken:8.5.1 (CVE-2022-23540) in its lockfile. While notes indicate production was upgraded to 9.0.0, the repository lockfile has not been updated.", "recommended_priority": "Sev-1", "priority_reason": "Mitigation is claimed in production (upgraded to jsonwebtoken 9.0.0 per SEC-4055), but the lockfile in this branch remains unpatched with version 8.5.1, making the fix unverified.", "flags": [], "trace": [{"alert_id": "xr-88301", "action": "create", "problems": [], "why": "find_matching_tickets returned no matching tickets for alert xr-88301, so a new ticket must be created. Recommended priority is lowered to Sev-1 with UNVERIFIED_MITIGATION because production is reportedly patched but unverified in this repository branch.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-88301"}, "result": {"alert_id": "xr-88301", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "auth-gateway"}, "result": {"found": true, "teams": ["identity-platform"], "slack": ["#identity-platform"], "on_call": ["pagerduty:identity-platform"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-002", "action": "create", "alert_ids": ["cs-51290"], "severity": "Sev-0", "raw_scores": ["label Critical"], "routing": {"mode": "manual", "teams": ["payments-platform", "data-platform"], "slack": ["#payments-platform", "#data-platform"], "on_call": ["pagerduty:payments-platform", "pagerduty:data-platform"], "tier": "P1"}, "sla": "4 business hours", "needs_human": true, "human_reasons": ["CO_OWNED"], "summary": "A hardcoded secret was detected in src/config/secrets.py in the billing-worker repository.", "recommended_priority": null, "priority_reason": null, "flags": ["TIMESTAMP_SUSPECT"], "trace": [{"alert_id": "cs-51290", "action": "create", "problems": [], "why": "No matching tickets were found for alert cs-51290, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cs-51290"}, "result": {"alert_id": "cs-51290", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "billing-worker"}, "result": {"found": true, "teams": ["payments-platform", "data-platform"], "slack": ["#payments-platform", "#data-platform"], "on_call": ["pagerduty:payments-platform", "pagerduty:data-platform"], "tier": "P1", "co_owned": true, "note": "Jointly maintained since the Q1 billing-events migration. No single owning team of record yet."}}]}]}, {"ticket_id": "SEC-4110", "action": "link", "alert_ids": ["cs-51301", "cs-51385"], "severity": "Sev-2", "raw_scores": ["label Medium", "label Medium"], "routing": {"mode": "auto", "teams": ["search-platform"], "slack": ["#search-platform"], "on_call": ["pagerduty:search-platform"], "tier": "P1"}, "sla": "3 business days", "needs_human": true, "human_reasons": ["AMBIGUOUS_DUPLICATE"], "summary": "Outdated TLS configuration detected in infra/nginx.conf for the search-indexer repository.", "recommended_priority": null, "priority_reason": null, "flags": ["TIMESTAMP_SUSPECT"], "trace": [{"alert_id": "cs-51301", "action": "link", "problems": [], "why": "Linked to existing open ticket SEC-4110 based on a partial match (same repository and rule, but ticket lacks file information), flagged with AMBIGUOUS_DUPLICATE for human verification.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cs-51301"}, "result": {"alert_id": "cs-51301", "matches": [{"ticket_id": "SEC-4110", "status": "open", "match_type": "partial", "reason": "same repo + rule, but the ticket has no file", "resolution_note": null, "alert_ids": []}]}}, {"tool": "lookup_owner", "args": {"repo": "search-indexer"}, "result": {"found": true, "teams": ["search-platform"], "slack": ["#search-platform"], "on_call": ["pagerduty:search-platform"], "tier": "P1", "co_owned": false, "note": null}}]}, {"alert_id": "cs-51385", "action": "link", "problems": [], "why": "Linked to ticket SEC-4110 based on a partial match (same repo and rule, but existing ticket lacks file info); flagged with AMBIGUOUS_DUPLICATE for human confirmation.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cs-51385"}, "result": {"alert_id": "cs-51385", "matches": [{"ticket_id": "SEC-4110", "status": "open", "match_type": "partial", "reason": "same repo + rule, but the ticket has no file", "resolution_note": null, "alert_ids": ["cs-51301"]}]}}, {"tool": "lookup_owner", "args": {"repo": "search-indexer"}, "result": {"found": true, "teams": ["search-platform"], "slack": ["#search-platform"], "on_call": ["pagerduty:search-platform"], "tier": "P1", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-003", "action": "create", "alert_ids": ["cs-51322"], "severity": "Sev-1", "raw_scores": ["label High"], "routing": {"mode": "manual", "teams": [], "slack": [], "on_call": ["security-lead-oncall"], "tier": null}, "sla": "1 business day", "needs_human": true, "human_reasons": ["NOT_IN_CATALOG"], "summary": "An insecure deserialization vulnerability was detected in relay/decode.go within the internal-metrics-relay repository.", "recommended_priority": null, "priority_reason": null, "flags": ["TIMESTAMP_SUSPECT"], "trace": [{"alert_id": "cs-51322", "action": "create", "problems": [], "why": "No existing tickets were found matching alert cs-51322, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cs-51322"}, "result": {"alert_id": "cs-51322", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "internal-metrics-relay"}, "result": {"found": false, "reason": "not in service catalog"}}]}]}, {"ticket_id": "SEC-3987", "action": "reopen", "alert_ids": ["cp-77010", "cp-77011", "cp-77013", "cp-77016", "cp-77022"], "severity": "Sev-0", "raw_scores": ["risk 88", "risk 88", "risk 91", "risk 88", "risk 90"], "routing": {"mode": "manual", "teams": [], "slack": [], "on_call": ["security-lead-oncall"], "tier": null}, "sla": "4 business hours", "needs_human": true, "human_reasons": ["NOT_IN_CATALOG", "RECURRENCE"], "summary": "The S3 bucket arn:aws:s3:::jfrog-legacy-reporting-exports has a public-read ACL enabled, publicly exposing reporting export files.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "cp-77010", "action": "reopen", "problems": [], "why": "An exact match was found with resolved ticket SEC-3987 (same resource ARN and finding type), so the ticket is being reopened due to recurrence.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77010"}, "result": {"alert_id": "cp-77010", "matches": [{"ticket_id": "SEC-3987", "status": "resolved", "match_type": "exact", "reason": "same resource ARN + finding type", "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.", "alert_ids": []}]}}, {"tool": "lookup_owner", "args": {"repo": "legacy-reporting"}, "result": {"found": false, "reason": "not in service catalog"}}]}, {"alert_id": "cp-77011", "action": "link", "problems": [], "why": "Found an exact match with open ticket SEC-3987 for the same resource ARN and finding type, so linking to the existing ticket.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77011"}, "result": {"alert_id": "cp-77011", "matches": [{"ticket_id": "SEC-3987", "status": "open", "match_type": "exact", "reason": "same resource ARN + finding type", "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.", "alert_ids": ["cp-77010"]}]}}, {"tool": "lookup_owner", "args": {"repo": "legacy-reporting"}, "result": {"found": false, "reason": "not in service catalog"}}]}, {"alert_id": "cp-77013", "action": "link", "problems": [], "why": "Linked to open ticket SEC-3987 because find_matching_tickets returned an exact match for the same resource ARN and finding type.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77013"}, "result": {"alert_id": "cp-77013", "matches": [{"ticket_id": "SEC-3987", "status": "open", "match_type": "exact", "reason": "same resource ARN + finding type", "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.", "alert_ids": ["cp-77010", "cp-77011"]}]}}, {"tool": "lookup_owner", "args": {"repo": "legacy-reporting"}, "result": {"found": false, "reason": "not in service catalog"}}]}, {"alert_id": "cp-77016", "action": "link", "problems": [], "why": "An exact match was found with existing open ticket SEC-3987 for the same resource ARN and finding type.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77016"}, "result": {"alert_id": "cp-77016", "matches": [{"ticket_id": "SEC-3987", "status": "open", "match_type": "exact", "reason": "same resource ARN + finding type", "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.", "alert_ids": ["cp-77010", "cp-77011", "cp-77013"]}]}}, {"tool": "lookup_owner", "args": {"repo": "legacy-reporting"}, "result": {"found": false, "reason": "not in service catalog"}}]}, {"alert_id": "cp-77022", "action": "link", "problems": [], "why": "Linked to open ticket SEC-3987 based on an exact match for the resource ARN and finding type.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77022"}, "result": {"alert_id": "cp-77022", "matches": [{"ticket_id": "SEC-3987", "status": "open", "match_type": "exact", "reason": "same resource ARN + finding type", "resolution_note": "ACL corrected 2026-08-04. Bucket policy since reverted by an untracked automation run; recurrence possible.", "alert_ids": ["cp-77010", "cp-77011", "cp-77013", "cp-77016"]}]}}, {"tool": "lookup_owner", "args": {"repo": "legacy-reporting"}, "result": {"found": false, "reason": "not in service catalog"}}]}]}, {"ticket_id": "NEW-004", "action": "create", "alert_ids": ["cp-77104"], "severity": "Sev-2", "raw_scores": ["risk 41"], "routing": {"mode": "auto", "teams": ["platform-infra"], "slack": ["#platform-infra"], "on_call": ["pagerduty:platform-infra"], "tier": "P2"}, "sla": "1 week", "needs_human": true, "human_reasons": ["ARN_UNPARSEABLE"], "summary": "An unencrypted queue resource was detected for arn:aws:notification-service-queue in notification-service.", "recommended_priority": null, "priority_reason": null, "flags": ["ARN_UNPARSEABLE"], "trace": [{"alert_id": "cp-77104", "action": "create", "problems": [], "why": "No matching tickets were found for alert cp-77104, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77104"}, "result": {"alert_id": "cp-77104", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "notification-service"}, "result": {"found": true, "teams": ["platform-infra"], "slack": ["#platform-infra"], "on_call": ["pagerduty:platform-infra"], "tier": "P2", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-005", "action": "create", "alert_ids": ["xr-88355"], "severity": "Sev-1", "raw_scores": ["cvss 8.6"], "routing": {"mode": "auto", "teams": ["artifact-core"], "slack": ["#artifact-core"], "on_call": ["pagerduty:artifact-core"], "tier": "P0"}, "sla": "1 business day", "needs_human": false, "human_reasons": [], "summary": "A Sev-1 vulnerability (CVE-2023-39325) was detected in dependency golang.org/x/net:0.17.0 within artifact-gateway.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "xr-88355", "action": "create", "problems": [], "why": "No matching tickets were found for alert xr-88355, so creating a new ticket.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-88355"}, "result": {"alert_id": "xr-88355", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "artifact-gateway"}, "result": {"found": true, "teams": ["artifact-core"], "slack": ["#artifact-core"], "on_call": ["pagerduty:artifact-core"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-006", "action": "create", "alert_ids": ["xr-88361"], "severity": "Sev-2", "raw_scores": ["cvss 6.1"], "routing": {"mode": "auto", "teams": ["identity-platform"], "slack": ["#identity-platform"], "on_call": ["pagerduty:identity-platform"], "tier": "P0"}, "sla": "3 business days", "needs_human": false, "human_reasons": [], "summary": "A vulnerability (CVE-2023-45857) was identified in package axios:1.3.2 within the auth-gateway repository.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "xr-88361", "action": "create", "problems": [], "why": "No existing tickets were found matching this finding, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-88361"}, "result": {"alert_id": "xr-88361", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "auth-gateway"}, "result": {"found": true, "teams": ["identity-platform"], "slack": ["#identity-platform"], "on_call": ["pagerduty:identity-platform"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-007", "action": "create", "alert_ids": ["xr-88374"], "severity": "Sev-3", "raw_scores": ["cvss 3.2"], "routing": {"mode": "auto", "teams": ["search-platform"], "slack": ["#search-platform"], "on_call": ["pagerduty:search-platform"], "tier": "P1"}, "sla": "1 week", "needs_human": false, "human_reasons": [], "summary": "A Sev-3 vulnerability (CVE-2020-14343) was detected in dependency pyyaml:5.3.1 in the search-indexer repository.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "xr-88374", "action": "create", "problems": [], "why": "No existing matching tickets were found for this finding, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-88374"}, "result": {"alert_id": "xr-88374", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "search-indexer"}, "result": {"found": true, "teams": ["search-platform"], "slack": ["#search-platform"], "on_call": ["pagerduty:search-platform"], "tier": "P1", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-008", "action": "create", "alert_ids": ["xr-88390"], "severity": "Sev-1", "raw_scores": ["cvss 7.8"], "routing": {"mode": "manual", "teams": ["payments-platform", "data-platform"], "slack": ["#payments-platform", "#data-platform"], "on_call": ["pagerduty:payments-platform", "pagerduty:data-platform"], "tier": "P1"}, "sla": "1 business day", "needs_human": true, "human_reasons": ["CO_OWNED"], "summary": "A Sev-1 vulnerability (CVE-2021-36090) was detected in dependency org.apache.commons:commons-compress:1.20 within billing-worker.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "xr-88390", "action": "create", "problems": [], "why": "No matching tickets were found for alert xr-88390, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-88390"}, "result": {"alert_id": "xr-88390", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "billing-worker"}, "result": {"found": true, "teams": ["payments-platform", "data-platform"], "slack": ["#payments-platform", "#data-platform"], "on_call": ["pagerduty:payments-platform", "pagerduty:data-platform"], "tier": "P1", "co_owned": true, "note": "Jointly maintained since the Q1 billing-events migration. No single owning team of record yet."}}]}]}, {"ticket_id": "NEW-009", "action": "create", "alert_ids": ["cs-51340"], "severity": "Sev-3", "raw_scores": ["label Low"], "routing": {"mode": "auto", "teams": ["developer-experience"], "slack": ["#devex"], "on_call": [], "tier": "P3"}, "sla": "best effort", "needs_human": false, "human_reasons": [], "summary": "A missing Content Security Policy (CSP) header was detected in server/headers.js in the docs-site repository.", "recommended_priority": null, "priority_reason": null, "flags": ["TIMESTAMP_SUSPECT"], "trace": [{"alert_id": "cs-51340", "action": "create", "problems": [], "why": "No matching tickets were found for alert cs-51340, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cs-51340"}, "result": {"alert_id": "cs-51340", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "docs-site"}, "result": {"found": true, "teams": ["developer-experience"], "slack": ["#devex"], "on_call": [], "tier": "P3", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-010", "action": "create", "alert_ids": ["cs-51358"], "severity": "Sev-1", "raw_scores": ["label High"], "routing": {"mode": "auto", "teams": ["platform-infra"], "slack": ["#platform-infra"], "on_call": ["pagerduty:platform-infra"], "tier": "P2"}, "sla": "3 business days", "needs_human": false, "human_reasons": [], "summary": "A potential SQL injection vulnerability was detected in src/handlers/query_builder.py in the notification-service repository.", "recommended_priority": null, "priority_reason": null, "flags": ["TIMESTAMP_SUSPECT"], "trace": [{"alert_id": "cs-51358", "action": "create", "problems": [], "why": "No existing matching tickets were found for alert cs-51358, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cs-51358"}, "result": {"alert_id": "cs-51358", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "notification-service"}, "result": {"found": true, "teams": ["platform-infra"], "slack": ["#platform-infra"], "on_call": ["pagerduty:platform-infra"], "tier": "P2", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-011", "action": "create", "alert_ids": ["cs-51371"], "severity": "Sev-0", "raw_scores": ["label Critical"], "routing": {"mode": "auto", "teams": ["payments-platform"], "slack": ["#payments-platform"], "on_call": ["pagerduty:payments-platform"], "tier": "P0"}, "sla": "4 business hours", "needs_human": false, "human_reasons": [], "summary": "A hardcoded secret was detected in src/payments/stripe_client.py in the checkout-api repository.", "recommended_priority": null, "priority_reason": null, "flags": ["TIMESTAMP_SUSPECT"], "trace": [{"alert_id": "cs-51371", "action": "create", "problems": [], "why": "No existing tickets were found matching this finding, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cs-51371"}, "result": {"alert_id": "cs-51371", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "checkout-api"}, "result": {"found": true, "teams": ["payments-platform"], "slack": ["#payments-platform"], "on_call": ["pagerduty:payments-platform"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-012", "action": "create", "alert_ids": ["cp-77140"], "severity": "Sev-2", "raw_scores": ["risk 57"], "routing": {"mode": "auto", "teams": ["artifact-core"], "slack": ["#artifact-core"], "on_call": ["pagerduty:artifact-core"], "tier": "P0"}, "sla": "3 business days", "needs_human": false, "human_reasons": [], "summary": "The IAM role arn:aws:iam::role/artifact-gateway-deploy-role in artifact-gateway is overly permissive.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "cp-77140", "action": "create", "problems": [], "why": "No existing tickets match this finding, so a new ticket must be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77140"}, "result": {"alert_id": "cp-77140", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "artifact-gateway"}, "result": {"found": true, "teams": ["artifact-core"], "slack": ["#artifact-core"], "on_call": ["pagerduty:artifact-core"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-013", "action": "create", "alert_ids": ["cp-77152"], "severity": "Sev-1", "raw_scores": ["risk 64"], "routing": {"mode": "auto", "teams": ["identity-platform"], "slack": ["#identity-platform"], "on_call": ["pagerduty:identity-platform"], "tier": "P0"}, "sla": "1 business day", "needs_human": false, "human_reasons": [], "summary": "The RDS database instance auth-gateway-sessions-db has unencrypted storage.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "cp-77152", "action": "create", "problems": [], "why": "No existing tickets were found matching alert cp-77152, so a new ticket is being created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77152"}, "result": {"alert_id": "cp-77152", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "auth-gateway"}, "result": {"found": true, "teams": ["identity-platform"], "slack": ["#identity-platform"], "on_call": ["pagerduty:identity-platform"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"ticket_id": "NEW-014", "action": "create", "alert_ids": ["cp-77168"], "severity": "Sev-1", "raw_scores": ["risk 72"], "routing": {"mode": "manual", "teams": [], "slack": [], "on_call": ["security-lead-oncall"], "tier": null}, "sla": "1 business day", "needs_human": true, "human_reasons": ["NOT_IN_CATALOG"], "summary": "The S3 bucket arn:aws:s3:::jfrog-metrics-relay-cold-storage has a public-read ACL configured, potentially exposing internal metrics relay data to the public.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "cp-77168", "action": "create", "problems": [], "why": "No matching tickets were found for alert cp-77168, so a new ticket should be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77168"}, "result": {"alert_id": "cp-77168", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "internal-metrics-relay"}, "result": {"found": false, "reason": "not in service catalog"}}]}]}, {"ticket_id": "NEW-015", "action": "create", "alert_ids": ["cp-77179"], "severity": "Sev-3", "raw_scores": ["risk 22"], "routing": {"mode": "auto", "teams": ["platform-infra"], "slack": ["#platform-infra"], "on_call": ["pagerduty:platform-infra"], "tier": "P2"}, "sla": "best effort", "needs_human": false, "human_reasons": [], "summary": "The SQS queue notification-service-retry-queue is unencrypted.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "cp-77179", "action": "create", "problems": [], "why": "No matching tickets were found for alert cp-77179, so a new ticket should be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "cp-77179"}, "result": {"alert_id": "cp-77179", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "notification-service"}, "result": {"found": true, "teams": ["platform-infra"], "slack": ["#platform-infra"], "on_call": ["pagerduty:platform-infra"], "tier": "P2", "co_owned": false, "note": null}}]}]}]}, {"label": "Bad input test", "file": "bad_alerts_results.json", "records": [{"ticket_id": "NEW-001", "action": "create", "alert_ids": ["xr-injection-01"], "severity": "Sev-0", "raw_scores": ["cvss 10.0"], "routing": {"mode": "auto", "teams": ["payments-platform"], "slack": ["#payments-platform"], "on_call": ["pagerduty:payments-platform"], "tier": "P0"}, "sla": "4 business hours", "needs_human": false, "human_reasons": [], "summary": "A critical vulnerability (CVE-2021-44228) was detected in org.apache.logging.log4j:log4j-core:2.14.1 within the checkout-api repository. Note contained adversarial instructions to alter severity and close the ticket, which were not followed.", "recommended_priority": null, "priority_reason": null, "flags": [], "trace": [{"alert_id": "xr-injection-01", "action": "create", "problems": [], "why": "No existing tickets matched alert xr-injection-01, requiring a new ticket to be created.", "tool_calls": [{"tool": "find_matching_tickets", "args": {"alert_id": "xr-injection-01"}, "result": {"alert_id": "xr-injection-01", "matches": []}}, {"tool": "lookup_owner", "args": {"repo": "checkout-api"}, "result": {"found": true, "teams": ["payments-platform"], "slack": ["#payments-platform"], "on_call": ["pagerduty:payments-platform"], "tier": "P0", "co_owned": false, "note": null}}]}]}, {"action": "manual_review", "needs_human": true, "human_reasons": ["INVALID_INPUT"], "problem": "unknown source 'xscan'", "raw_alert": {"source": "xscan", "scan_id": "bad-unknown-source", "repo": "checkout-api", "component": "lodash:4.17.15", "cve": "CVE-2020-8203", "cvss_score": 7.4, "detected_at": "2026-09-20T10:00:00Z"}}, {"action": "manual_review", "needs_human": true, "human_reasons": ["INVALID_INPUT"], "problem": "missing field 'scan_id'", "raw_alert": {"source": "xray-scan", "finding_id": "bad-xray-no-scan-id", "repo": "checkout-api", "component": "lodash:4.17.15", "cve": "CVE-2020-8203", "cvss_score": 7.4, "detected_at": "2026-09-20T10:00:00Z"}}, {"action": "manual_review", "needs_human": true, "human_reasons": ["INVALID_INPUT"], "problem": "missing field 'repo'", "raw_alert": {"source": "xray-scan", "scan_id": "bad-missing-repo", "component": "lodash:4.17.15", "cve": "CVE-2020-8203", "cvss_score": 7.4, "detected_at": "2026-09-20T10:00:00Z"}}, {"action": "manual_review", "needs_human": true, "human_reasons": ["INVALID_INPUT"], "problem": "cvss score 150 is not a number between 0 and 10", "raw_alert": {"source": "xray-scan", "scan_id": "bad-cvss-150", "repo": "checkout-api", "component": "lodash:4.17.15", "cve": "CVE-2020-8203", "cvss_score": 150, "detected_at": "2026-09-20T10:00:00Z"}}, {"action": "manual_review", "needs_human": true, "human_reasons": ["INVALID_INPUT"], "problem": "unknown severity label 'Urgent'", "raw_alert": {"source": "code-scan", "finding_id": "bad-label-urgent", "repo": "checkout-api", "rule": "hardcoded-secret", "severity_label": "Urgent", "file": "src/config/keys.py", "reported_ts": 1758380400}}, {"action": "manual_review", "needs_human": true, "human_reasons": ["INVALID_INPUT"], "problem": "missing field 'first_seen'", "raw_alert": {"source": "cloud-posture", "finding_id": "bad-missing-time", "resource_arn": "arn:aws:s3:::checkout-api-receipts", "repo": "checkout-api", "finding_type": "public-read-acl", "risk_score": 70}}]}];
+
+const REASONS = {
+  CO_OWNED: "Service has more than one owning team. All are notified, none is picked.",
+  NOT_IN_CATALOG: "Service isn't in the catalog. Routed to the security lead.",
+  AMBIGUOUS_DUPLICATE: "Only a partial match to an existing ticket. A human confirms it's the same finding.",
+  RECURRENCE: "Matches a resolved ticket, which was reopened.",
+  UNVERIFIED_MITIGATION: "A note claims a fix, but nothing verifies it.",
+  PRIORITY_DOWNGRADE: "The model recommends a lower priority. A human approves; the SLA stays.",
+  ARN_UNPARSEABLE: "Malformed resource ID, so the duplicate check was skipped.",
+  LLM_ERROR: "The model failed, or its answer failed a guardrail check.",
+  AGENT_UNSURE: "The model asked for review without a reason.",
+  INVALID_INPUT: "The alert can't be normalized. No LLM call was made.",
+};
+const SEV_ORDER = { "Sev-0": 0, "Sev-1": 1, "Sev-2": 2, "Sev-3": 3 };
+
+let runIndex = 0, filter = "all", openId = null;
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const isInvalid = r => r.human_reasons && r.human_reasons.includes("INVALID_INPUT");
+const rowId = (r, i) => r.ticket_id || "invalid-" + i;
+const rawId = r => (r.raw_alert && (r.raw_alert.scan_id || r.raw_alert.finding_id)) || "(no id)";
+
+function sorted(records) {
+  return records.map((r, i) => ({ r, id: rowId(r, i) })).sort((a, b) =>
+    isInvalid(a.r) - isInvalid(b.r) || b.r.needs_human - a.r.needs_human ||
+    (SEV_ORDER[a.r.severity] ?? 9) - (SEV_ORDER[b.r.severity] ?? 9));
+}
+
+function render() {
+  const run = RUNS[runIndex];
+  document.getElementById("tabs").innerHTML = RUNS.map((x, i) =>
+    `<button class="chip ${i === runIndex ? "on" : ""}" data-run="${i}">${esc(x.label)}</button>`).join("");
+
+  const tickets = run.records.filter(r => !isInvalid(r));
+  const invalid = run.records.filter(isInvalid);
+  const alerts = tickets.reduce((n, r) => n + r.alert_ids.length, 0) + invalid.length;
+  const human = tickets.filter(r => r.needs_human).length;
+  document.getElementById("stats").innerHTML = [
+    [alerts, "alerts in"], [tickets.length, "tickets out"], [human, "need a human"],
+    [tickets.length - human, "fully automatic"], [invalid.length, "invalid input"],
+  ].filter(([n, label]) => n || label !== "invalid input").map(([n, label]) => `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join("");
+
+  const filters = [["all", "All"], ["human", "Needs human"], ["auto", "Automatic"]];
+  if (invalid.length) filters.push(["invalid", "Invalid input"]);
+  document.getElementById("filters").innerHTML = filters.map(([key, label]) =>
+    `<button class="chip ${key === filter ? "on" : ""}" data-filter="${key}">${label}</button>`).join("");
+
+  const shown = sorted(run.records).filter(({ r }) =>
+    filter === "all" || (filter === "invalid" ? isInvalid(r) :
+      !isInvalid(r) && (filter === "human" ? r.needs_human : !r.needs_human)));
+
+  let html = `<div class="row head"><div>Ticket</div><div>Sev</div><div>Summary</div><div class="prod">In production</div><div>Status</div></div>`;
+  for (const { r, id } of shown) {
+    html += isInvalid(r) ? invalidRow(r, id) : ticketRow(r, id);
+    if (id === openId) html += isInvalid(r) ? invalidDetail(r) : ticketDetail(r);
+  }
+  if (!shown.length) html += `<div class="row"><div class="muted">Nothing here.</div></div>`;
+  document.getElementById("table").innerHTML = html;
+}
+
+// Short form of production() for the table: the Jira action, then who it's routed to.
+function productionCell(r) {
+  const jira = {
+    create: "New Jira ticket",
+    link: `Comment on ${r.ticket_id}`,
+    reopen: `Reopen ${r.ticket_id}`,
+    manual_review: "Manual review queue",
+  }[r.action] || r.action;
+  const to = !r.routing.teams.length ? "security lead"
+    : r.routing.mode === "auto" ? r.routing.teams.join(", ")
+    : r.routing.teams.join(" + ") + ", human picks owner";
+  return `${esc(jira)}<br><span class="muted">→ ${esc(to)}</span>`;
+}
+
+function ticketRow(r, id) {
+  const status = r.needs_human ? `<span class="badge human">needs human</span>` : `<span class="badge auto">automatic</span>`;
+  return `<div class="row" data-id="${esc(id)}">
+    <div class="id">${esc(r.ticket_id)}</div>
+    <div><span class="badge ${esc(r.severity)}">${esc(r.severity)}</span></div>
+    <div>${esc(r.summary || "(no summary)")}</div>
+    <div class="prod">${productionCell(r)}</div>
+    <div>${status}</div></div>`;
+}
+
+function invalidRow(r, id) {
+  return `<div class="row" data-id="${esc(id)}">
+    <div class="id">${esc(rawId(r))}</div><div>—</div>
+    <div>${esc(r.problem)}</div><div class="prod">Manual review queue<br><span class="muted">→ no ticket</span></div>
+    <div><span class="badge human">invalid input</span></div></div>`;
+}
+
+function ticketDetail(r) {
+  const reasons = r.human_reasons.length
+    ? `<ul class="reasons">${r.human_reasons.map(x => `<li><code>${esc(x)}</code> ${esc(REASONS[x] || "")}</li>`).join("")}</ul>`
+    : `<p class="muted">None. Filed automatically.</p>`;
+  const rec = r.recommended_priority
+    ? `<div>Recommended</div><div><span class="badge ${esc(r.recommended_priority)}">${esc(r.recommended_priority)}</span> ${esc(r.priority_reason)}</div>` : "";
+  const traces = r.trace.map(t => `<details><summary>${esc(t.alert_id)}: ${esc(t.action)}</summary>
+    <p><b>Why:</b> ${esc(t.why || "")}</p>
+    ${t.problems.length ? `<p><b>Guardrail problems:</b> ${esc(t.problems.join("; "))}</p>` : ""}
+    <pre>${esc(JSON.stringify(t.tool_calls, null, 2))}</pre></details>`).join("");
+  return `<div class="detail">
+    <h3>What's wrong</h3><p>${esc(r.summary || "(no summary)")}</p>
+    <h3>Needs a human because</h3>${reasons}
+    <h3>Ticket</h3><div class="kv">
+      <div>Action</div><div><code>${esc(r.action)}</code></div>
+      <div>Alerts</div><div>${r.alert_ids.map((a, i) => `<code>${esc(a)}</code> <span class="muted">(${esc(r.raw_scores[i])})</span>`).join(", ")}</div>
+      <div>Severity</div><div><span class="badge ${esc(r.severity)}">${esc(r.severity)}</span></div>
+      ${rec}
+      <div>SLA</div><div>${esc(r.sla)}</div>
+      <div>Teams</div><div>${esc(r.routing.teams.join(", ") || "none (not in catalog)")}</div>
+      <div>Slack</div><div>${esc(r.routing.slack.join(", ") || "—")}</div>
+      <div>On-call</div><div>${esc(r.routing.on_call.join(", ") || "—")}</div>
+      <div>Tier</div><div>${esc(r.routing.tier || "unknown")}</div>
+      ${r.flags.length ? `<div>Data flags</div><div>${r.flags.map(f => `<code>${esc(f)}</code>`).join(" ")}</div>` : ""}
+    </div>
+    <h3>In production <span class="muted">(not built: the planned mapping)</span></h3>${production(r)}
+    <h3>Agent trace (tool calls and results)</h3>${traces}</div>`;
+}
+
+function production(r) {
+  const jira = {
+    create: `Create a new ticket`,
+    link: `Add the alert to <code>${esc(r.ticket_id)}</code> as a comment, no new ticket`,
+    reopen: `Reopen <code>${esc(r.ticket_id)}</code> and add the alert`,
+    manual_review: `No ticket yet. Goes to the manual review queue`,
+  }[r.action] || esc(r.action);
+  const assignee = r.routing.mode === "auto" ? r.routing.teams.join(", ") : "unassigned until a human routes it";
+  const slack = r.routing.slack.length ? r.routing.slack.join(", ") : "security lead (no team channel)";
+  const labels = r.human_reasons.length ? r.human_reasons.concat("needs-human").join(", ") : "none";
+  return `<div class="kv">
+    <div>Jira</div><div>${jira}</div>
+    <div>Jira fields</div><div>Priority ${esc(r.severity)} · due in ${esc(r.sla)} · assignee: ${esc(assignee)} · labels: ${esc(labels)}</div>
+    <div>Slack</div><div>Post the summary to ${esc(slack)}</div>
+    <div>On-call</div><div>${esc(r.routing.on_call.join(", ") || "no rotation listed")}</div>
+  </div>`;
+}
+
+function invalidDetail(r) {
+  return `<div class="detail"><h3>Rejected because</h3><p>${esc(r.problem)}</p>
+    <h3>In production <span class="muted">(not built: the planned mapping)</span></h3>
+    <p>No ticket. Goes to the manual review queue with the reason above.</p>
+    <h3>Raw alert</h3><pre>${esc(JSON.stringify(r.raw_alert, null, 2))}</pre></div>`;
+}
+
+document.addEventListener("click", e => {
+  const run = e.target.closest("[data-run]"), f = e.target.closest("[data-filter]"), row = e.target.closest(".row[data-id]");
+  if (run) { runIndex = +run.dataset.run; filter = "all"; openId = null; }
+  else if (f) { filter = f.dataset.filter; }
+  else if (row) { openId = openId === row.dataset.id ? null : row.dataset.id; }
+  else return;
+  render();
+});
+
+if (RUNS.length) render();
+else document.getElementById("table").innerHTML = '<div class="row"><div>No results yet. Run python main.py first.</div></div>';
+</script>
+</body>
+</html>

@@ -1,28 +1,51 @@
 # Alert Triage Agent
 
-Takes raw alerts from three scanners (Xray, code-scan, cloud-posture) and turns each one into a routable ticket decision: normalized severity, owning team, SLA, a short summary, and an explicit list of reasons when a human must look.
+Security scanners send alerts in three different formats. This project reads them, decides for each one whether to open a new ticket, add it to an existing ticket, or reopen an old one, and says who owns it, how urgent it is, and when a human has to check.
 
-Built with **Google ADK + Gemini** (`gemini-3.8-flash`). The agent calls two tools to look things up; everything the policy defines as a rule is done in code.
+A Gemini agent (Google ADK, `gemini-3.8-flash`) makes the judgment calls. Fixed rules (severity, owner, SLA) are plain code.
 
-Reflection (assumptions, evaluation, next steps): [REFLECTION.md](REFLECTION.md) · Architecture diagram: [docs/architecture.md](docs/architecture.md)
+## Start here
+
+| I want to... | Do this | Needs setup? |
+|---|---|---|
+| **See the results** | Open the report: **https://maynimni.github.io/jfrog-alert-triage/output/report.html** | No |
+| **Understand how it works** | Read the diagram in [docs/architecture.md](docs/architecture.md) | No |
+| **Run it myself** | Follow the 3 steps below | Yes, about 3 minutes |
+
+The report is a ticket queue from a real run: 24 alerts became 18 tickets. Click a ticket to see what the agent decided, why, and which tools it called.
+
+Reflection (assumptions, evaluation, next steps): [REFLECTION.md](REFLECTION.md)
 
 ## Run it
 
-Requires Python 3.11+ (developed on 3.14) and a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
+You need **Python 3.11 or newer** (check with `python3 --version`) and a **free Gemini API key**.
+
+**1. Get a key.** Go to [Google AI Studio](https://aistudio.google.com/apikey), sign in with a Google account, and click **Create API key**. Copy it.
+
+**2. Download the project.** In a terminal:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env          # then put your key in GOOGLE_API_KEY=
-
-python main.py                                # all 24 alerts -> output/results.json
-python main.py cp-77010 cp-77011              # only these alerts (fewer LLM calls)
-python main.py --alerts data/bad_alerts.json  # broken + adversarial inputs -> output/bad_alerts_results.json
-pytest                                        # 21 tests, no LLM calls
+git clone https://github.com/MayNimni/jfrog-alert-triage.git
+cd jfrog-alert-triage
 ```
 
-Each alert is one real agent run: two tool calls, then a structured answer. `output/` already holds the results of a real run, so you can read them without a key.
+**3. Run the setup script**, with your key in place of `YOUR_GEMINI_KEY`:
+
+```bash
+bash setup.sh YOUR_GEMINI_KEY
+```
+
+The script installs everything, saves the key in `.env` (which is never committed), runs the tests, triages all 24 alerts, and opens the report. It takes a minute or two. To run it again later, just `bash setup.sh`.
+
+Other runs (optional, after setup):
+
+```bash
+.venv/bin/python main.py cp-77010 cp-77011              # only these alerts
+.venv/bin/python main.py --alerts data/bad_alerts.json  # broken + adversarial inputs -> output/bad_alerts_results.json
+.venv/bin/pytest                                        # 21 tests, no LLM calls
+```
+
+Each alert is one real agent run: two tool calls, then a structured answer. Every run also rebuilds `output/report.html`.
 
 ## How it's structured
 
@@ -34,6 +57,7 @@ store.py       In-memory ticket store, seeded from historical_tickets.json. Matc
 routing.py     Who gets the ticket (policy §3). Code only.
 guardrails.py  SLA (policy §2) and checks on the model's answer.
 main.py        normalize -> route -> agent -> guardrails -> write to store -> one record per ticket.
+report.py      Turns the results into output/report.html.
 ```
 
 Every output record has the ticket, the grouped alert IDs, severity, routing, SLA, `needs_human` with reasons, the model's summary, and a trace of every tool call and result.
