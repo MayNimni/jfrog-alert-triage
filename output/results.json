@@ -27,7 +27,7 @@
     "sla": "1 business day",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "A Sev-1 vulnerability (CVE-2020-36518) was detected in jackson-databind version 2.9.8 within the checkout-api repository.",
+    "summary": "Vulnerability CVE-2020-36518 was detected in com.fasterxml.jackson.core:jackson-databind:2.9.8 in checkout-api.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -36,7 +36,7 @@
         "alert_id": "xr-88213",
         "action": "link",
         "problems": [],
-        "why": "An open ticket (SEC-4102) was found with an exact match for the same repo, component, and CVE, so this alert is linked to it.",
+        "why": "An exact match was found with open ticket SEC-4102 covering the same repo, component, and CVE.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -84,7 +84,7 @@
         "alert_id": "xr-88240",
         "action": "link",
         "problems": [],
-        "why": "An exact match was found for open ticket SEC-4102 covering the same repo, component, and CVE, so this alert is linked to it.",
+        "why": "An exact match was found with open ticket SEC-4102 (same repo, component, and CVE), so linking this alert to the existing open ticket.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -161,16 +161,16 @@
       "UNVERIFIED_MITIGATION",
       "PRIORITY_DOWNGRADE"
     ],
-    "summary": "auth-gateway specifies vulnerable dependency jsonwebtoken:8.5.1 (CVE-2022-23540) in its lockfile. While notes indicate production was upgraded to 9.0.0, the repository lockfile has not been updated.",
+    "summary": "jsonwebtoken 8.5.1 in auth-gateway is affected by CVE-2022-23540 due to an outdated dependency lockfile. Although a note claims production was upgraded to 9.0.0, the repository lockfile still references the vulnerable version.",
     "recommended_priority": "Sev-1",
-    "priority_reason": "Mitigation is claimed in production (upgraded to jsonwebtoken 9.0.0 per SEC-4055), but the lockfile in this branch remains unpatched with version 8.5.1, making the fix unverified.",
+    "priority_reason": "Claimed mitigation in production per SEC-4055, but the dependency lockfile in the repository is not yet updated and requires verification.",
     "flags": [],
     "trace": [
       {
         "alert_id": "xr-88301",
         "action": "create",
         "problems": [],
-        "why": "find_matching_tickets returned no matching tickets for alert xr-88301, so a new ticket must be created. Recommended priority is lowered to Sev-1 with UNVERIFIED_MITIGATION because production is reportedly patched but unverified in this repository branch.",
+        "why": "find_matching_tickets returned no existing tickets matching alert xr-88301, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -238,7 +238,7 @@
     "human_reasons": [
       "CO_OWNED"
     ],
-    "summary": "A hardcoded secret was detected in src/config/secrets.py in the billing-worker repository.",
+    "summary": "A hardcoded secret was detected in billing-worker within src/config/secrets.py.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [
@@ -249,7 +249,7 @@
         "alert_id": "cs-51290",
         "action": "create",
         "problems": [],
-        "why": "No matching tickets were found for alert cs-51290, so a new ticket must be created.",
+        "why": "No existing tickets were found matching this finding, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -319,7 +319,7 @@
     "human_reasons": [
       "AMBIGUOUS_DUPLICATE"
     ],
-    "summary": "Outdated TLS configuration detected in infra/nginx.conf for the search-indexer repository.",
+    "summary": "An outdated TLS configuration was detected in infra/nginx.conf in the search-indexer repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [
@@ -330,7 +330,7 @@
         "alert_id": "cs-51301",
         "action": "link",
         "problems": [],
-        "why": "Linked to existing open ticket SEC-4110 based on a partial match (same repository and rule, but ticket lacks file information), flagged with AMBIGUOUS_DUPLICATE for human verification.",
+        "why": "Linked to existing ticket SEC-4110 due to a partial match on repo and rule, adding AMBIGUOUS_DUPLICATE for human confirmation.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -378,7 +378,7 @@
         "alert_id": "cs-51385",
         "action": "link",
         "problems": [],
-        "why": "Linked to ticket SEC-4110 based on a partial match (same repo and rule, but existing ticket lacks file info); flagged with AMBIGUOUS_DUPLICATE for human confirmation.",
+        "why": "Linked to ticket SEC-4110 due to a partial match (matching repository and rule, but existing ticket lacks file information); added AMBIGUOUS_DUPLICATE for human confirmation.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -450,7 +450,7 @@
     "human_reasons": [
       "NOT_IN_CATALOG"
     ],
-    "summary": "An insecure deserialization vulnerability was detected in relay/decode.go within the internal-metrics-relay repository.",
+    "summary": "Insecure deserialization was detected in relay/decode.go for the internal-metrics-relay repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [
@@ -520,7 +520,7 @@
       "NOT_IN_CATALOG",
       "RECURRENCE"
     ],
-    "summary": "The S3 bucket arn:aws:s3:::jfrog-legacy-reporting-exports has a public-read ACL enabled, publicly exposing reporting export files.",
+    "summary": "The S3 bucket arn:aws:s3:::jfrog-legacy-reporting-exports is publicly accessible due to an active public-read ACL.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -529,7 +529,7 @@
         "alert_id": "cp-77010",
         "action": "reopen",
         "problems": [],
-        "why": "An exact match was found with resolved ticket SEC-3987 (same resource ARN and finding type), so the ticket is being reopened due to recurrence.",
+        "why": "Ticket SEC-3987 is an exact match for the same resource ARN and finding type but is currently resolved, requiring the ticket to be reopened due to recurrence.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -566,7 +566,7 @@
         "alert_id": "cp-77011",
         "action": "link",
         "problems": [],
-        "why": "Found an exact match with open ticket SEC-3987 for the same resource ARN and finding type, so linking to the existing ticket.",
+        "why": "Found an exact match with open ticket SEC-3987 for the same resource ARN and finding type.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -605,7 +605,7 @@
         "alert_id": "cp-77013",
         "action": "link",
         "problems": [],
-        "why": "Linked to open ticket SEC-3987 because find_matching_tickets returned an exact match for the same resource ARN and finding type.",
+        "why": "Linked to open ticket SEC-3987 due to an exact match on the resource ARN and finding type.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -645,7 +645,7 @@
         "alert_id": "cp-77016",
         "action": "link",
         "problems": [],
-        "why": "An exact match was found with existing open ticket SEC-3987 for the same resource ARN and finding type.",
+        "why": "Found an exact match with open ticket SEC-3987 on the same resource ARN and finding type.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -686,7 +686,7 @@
         "alert_id": "cp-77022",
         "action": "link",
         "problems": [],
-        "why": "Linked to open ticket SEC-3987 based on an exact match for the resource ARN and finding type.",
+        "why": "An exact match was found for the same resource ARN and finding type with open ticket SEC-3987, so linking this alert to SEC-3987.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -754,7 +754,7 @@
     "human_reasons": [
       "ARN_UNPARSEABLE"
     ],
-    "summary": "An unencrypted queue resource was detected for arn:aws:notification-service-queue in notification-service.",
+    "summary": "The resource arn:aws:notification-service-queue in notification-service is an unencrypted queue.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [
@@ -765,7 +765,7 @@
         "alert_id": "cp-77104",
         "action": "create",
         "problems": [],
-        "why": "No matching tickets were found for alert cp-77104, so a new ticket must be created.",
+        "why": "No existing tickets match alert cp-77104, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -828,7 +828,7 @@
     "sla": "1 business day",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "A Sev-1 vulnerability (CVE-2023-39325) was detected in dependency golang.org/x/net:0.17.0 within artifact-gateway.",
+    "summary": "Vulnerability CVE-2023-39325 was detected in component golang.org/x/net:0.17.0 in the artifact-gateway repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -837,7 +837,7 @@
         "alert_id": "xr-88355",
         "action": "create",
         "problems": [],
-        "why": "No matching tickets were found for alert xr-88355, so creating a new ticket.",
+        "why": "No existing matching tickets were found for alert xr-88355, so a new ticket should be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -900,7 +900,7 @@
     "sla": "3 business days",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "A vulnerability (CVE-2023-45857) was identified in package axios:1.3.2 within the auth-gateway repository.",
+    "summary": "The auth-gateway repository uses vulnerable npm dependency axios:1.3.2, which is affected by CVE-2023-45857.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -909,7 +909,7 @@
         "alert_id": "xr-88361",
         "action": "create",
         "problems": [],
-        "why": "No existing tickets were found matching this finding, so a new ticket must be created.",
+        "why": "No matching tickets were found for alert xr-88361, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -972,7 +972,7 @@
     "sla": "1 week",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "A Sev-3 vulnerability (CVE-2020-14343) was detected in dependency pyyaml:5.3.1 in the search-indexer repository.",
+    "summary": "Vulnerability CVE-2020-14343 was detected in pyyaml:5.3.1 within the search-indexer repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -981,7 +981,7 @@
         "alert_id": "xr-88374",
         "action": "create",
         "problems": [],
-        "why": "No existing matching tickets were found for this finding, so a new ticket must be created.",
+        "why": "No existing tickets matched alert xr-88374 or finding key search-indexer | pyyaml:5.3.1 | CVE-2020-14343, so a new ticket needs to be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -1049,7 +1049,7 @@
     "human_reasons": [
       "CO_OWNED"
     ],
-    "summary": "A Sev-1 vulnerability (CVE-2021-36090) was detected in dependency org.apache.commons:commons-compress:1.20 within billing-worker.",
+    "summary": "Vulnerability CVE-2021-36090 was detected in dependency org.apache.commons:commons-compress:1.20 within the billing-worker repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -1058,7 +1058,7 @@
         "alert_id": "xr-88390",
         "action": "create",
         "problems": [],
-        "why": "No matching tickets were found for alert xr-88390, so a new ticket must be created.",
+        "why": "No matching tickets were found for alert xr-88390, so a new ticket should be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -1122,7 +1122,7 @@
     "sla": "best effort",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "A missing Content Security Policy (CSP) header was detected in server/headers.js in the docs-site repository.",
+    "summary": "A missing Content Security Policy (CSP) header was detected in server/headers.js for the docs-site repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [
@@ -1133,7 +1133,7 @@
         "alert_id": "cs-51340",
         "action": "create",
         "problems": [],
-        "why": "No matching tickets were found for alert cs-51340, so a new ticket must be created.",
+        "why": "No existing ticket matched this finding upon lookup, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -1194,7 +1194,7 @@
     "sla": "3 business days",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "A potential SQL injection vulnerability was detected in src/handlers/query_builder.py in the notification-service repository.",
+    "summary": "A SQL injection risk was identified in src/handlers/query_builder.py in the notification-service repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [
@@ -1205,7 +1205,7 @@
         "alert_id": "cs-51358",
         "action": "create",
         "problems": [],
-        "why": "No existing matching tickets were found for alert cs-51358, so a new ticket must be created.",
+        "why": "No existing tickets were found matching alert cs-51358, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -1268,7 +1268,7 @@
     "sla": "4 business hours",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "A hardcoded secret was detected in src/payments/stripe_client.py in the checkout-api repository.",
+    "summary": "A hardcoded secret was detected in src/payments/stripe_client.py within the checkout-api repository.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [
@@ -1279,7 +1279,7 @@
         "alert_id": "cs-51371",
         "action": "create",
         "problems": [],
-        "why": "No existing tickets were found matching this finding, so a new ticket must be created.",
+        "why": "No existing tickets were found matching alert cs-51371, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -1342,7 +1342,7 @@
     "sla": "3 business days",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "The IAM role arn:aws:iam::role/artifact-gateway-deploy-role in artifact-gateway is overly permissive.",
+    "summary": "The IAM role arn:aws:iam::role/artifact-gateway-deploy-role in artifact-gateway was flagged as overly permissive.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -1351,7 +1351,7 @@
         "alert_id": "cp-77140",
         "action": "create",
         "problems": [],
-        "why": "No existing tickets match this finding, so a new ticket must be created.",
+        "why": "No matching tickets were found for alert cp-77140, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -1414,7 +1414,7 @@
     "sla": "1 business day",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "The RDS database instance auth-gateway-sessions-db has unencrypted storage.",
+    "summary": "The RDS database resource arn:aws:rds:::auth-gateway-sessions-db in auth-gateway has unencrypted storage.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -1423,7 +1423,7 @@
         "alert_id": "cp-77152",
         "action": "create",
         "problems": [],
-        "why": "No existing tickets were found matching alert cp-77152, so a new ticket is being created.",
+        "why": "No existing matching tickets were found for alert cp-77152, so a new ticket must be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",
@@ -1484,7 +1484,7 @@
     "human_reasons": [
       "NOT_IN_CATALOG"
     ],
-    "summary": "The S3 bucket arn:aws:s3:::jfrog-metrics-relay-cold-storage has a public-read ACL configured, potentially exposing internal metrics relay data to the public.",
+    "summary": "The S3 bucket arn:aws:s3:::jfrog-metrics-relay-cold-storage is configured with a public-read ACL, exposing internal relay cold storage data publicly.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -1545,7 +1545,7 @@
     "sla": "best effort",
     "needs_human": false,
     "human_reasons": [],
-    "summary": "The SQS queue notification-service-retry-queue is unencrypted.",
+    "summary": "The SQS retry queue `arn:aws:sqs:::notification-service-retry-queue` in the notification-service repository is unencrypted.",
     "recommended_priority": null,
     "priority_reason": null,
     "flags": [],
@@ -1554,7 +1554,7 @@
         "alert_id": "cp-77179",
         "action": "create",
         "problems": [],
-        "why": "No matching tickets were found for alert cp-77179, so a new ticket should be created.",
+        "why": "No existing tickets were found matching this finding, so a new ticket should be created.",
         "tool_calls": [
           {
             "tool": "find_matching_tickets",

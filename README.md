@@ -12,7 +12,7 @@ A Gemini agent (Google ADK, `gemini-3.8-flash`) makes the judgment calls. Fixed 
 | **Understand how it works** | Look at the diagram: [docs/architecture.png](docs/architecture.png) | No |
 | **Run it myself** | Follow the 3 steps below | Yes, about 3 minutes |
 
-The report is a ticket queue from a real run: 24 alerts became 18 tickets. Click a ticket to see what the agent decided, why, and which tools it called.
+The report is a ticket queue from a real run: 24 alerts became 18 tickets. It has three pages: **Overview** (the numbers, how a decision is made, why each ticket needs a person, and the hard cases), **Queue** (the work queue an analyst would use) and **Bad input** (malformed and adversarial alerts). Click a ticket to open a side panel with the decision, the reasons, the scanner note it was given, and every tool call. A ticket can be linked directly, e.g. `report.html#queue/SEC-3987`.
 
 Reflection (assumptions, evaluation, next steps): [REFLECTION.md](REFLECTION.md)
 
@@ -57,7 +57,7 @@ store.py       In-memory ticket store, seeded from historical_tickets.json. Matc
 routing.py     Who gets the ticket (policy §3). Code only.
 guardrails.py  SLA (policy §2) and checks on the model's answer.
 main.py        normalize -> route -> agent -> guardrails -> write to store -> one record per ticket.
-report.py      Turns the results into output/report.html.
+report.py      Turns the results (plus output/run_meta.json: model and run time) into output/report.html.
 ```
 
 Every output record has the ticket, the grouped alert IDs, severity, routing, SLA, `needs_human` with reasons, the model's summary, and a trace of every tool call and result.

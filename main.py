@@ -15,10 +15,10 @@ from pathlib import Path
 import guardrails
 import store
 import tools
-from agent import AgentError, run_agent
+from agent import DEFAULT_MODEL, MODEL, AgentError, run_agent
 from models import NormalizedAlert
 from normalize import InvalidAlert, load_alerts, normalize
-from report import write_report
+from report import save_meta, write_report
 from routing import route
 
 DATA = Path(__file__).parent / "data"
@@ -27,10 +27,12 @@ OUTPUT_DIR = Path(__file__).parent / "output"
 
 
 def output_path(alerts_path: Path) -> Path:
-    """results.json for the main alerts file, <name>_results.json for any other, so nothing is overwritten."""
-    if alerts_path.resolve() == DEFAULT_ALERTS.resolve():
-        return OUTPUT_DIR / "results.json"
-    return OUTPUT_DIR / f"{alerts_path.stem}_results.json"
+    """results.json for the main alerts file, <name>_results.json for any other, so nothing is overwritten.
+    A non-default model adds its name: results_gemini-3.8-pro.json."""
+    name = "results" if alerts_path.resolve() == DEFAULT_ALERTS.resolve() else f"{alerts_path.stem}_results"
+    if MODEL != DEFAULT_MODEL:
+        name += f"_{MODEL}"
+    return OUTPUT_DIR / f"{name}.json"
 
 
 def apply_to_store(action: str, linked_ticket_id: str | None, alert: NormalizedAlert) -> str:
@@ -164,6 +166,7 @@ def main(alerts_path: Path, only_alert_ids: list[str]) -> None:
     output.parent.mkdir(exist_ok=True)
     output.write_text(json.dumps(list(records.values()) + invalid, indent=2))
     print(f"\n{len(alerts)} alerts -> {len(records)} tickets, {len(invalid)} invalid. Written to {output}")
+    save_meta(MODEL)
     print(f"Report: {write_report()}")
 
 
